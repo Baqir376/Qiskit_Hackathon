@@ -23,7 +23,7 @@ function Column({ j, rankPos, prob, maxP, isOpt, color, label, done }: { j: numb
   const row = Math.floor(rankPos / COLS), col = rankPos % COLS;
   const x = (col - (COLS - 1) / 2) * GAP, z = (row - 1.5) * GAP;
   const target = Math.max(0.03, (prob / maxP) * HMAX);
-  const base = useMemo(() => new THREE.Color(isOpt ? color : "#7B7567"), [isOpt, color]);
+  const base = useMemo(() => new THREE.Color(isOpt ? color : "#D9D1C0"), [isOpt, color]);
   useFrame((_, dt) => {
     const m = mesh.current!;
     const h = THREE.MathUtils.damp(m.scale.y, target, 6, dt);
@@ -36,7 +36,7 @@ function Column({ j, rankPos, prob, maxP, isOpt, color, label, done }: { j: numb
       <mesh ref={mesh} scale={[1, 0.03, 1]} onPointerOver={(e) => { e.stopPropagation(); setHover(true); }} onPointerOut={() => setHover(false)}>
         <boxGeometry args={[0.5, 1, 0.5]} />
         <meshPhysicalMaterial ref={mat} color={base} emissive={base} emissiveIntensity={0.1} roughness={0.15} metalness={0.1}
-          transmission={isOpt ? 0 : 0.35} thickness={0.5} clearcoat={1} toneMapped={!isOpt} />
+          transmission={isOpt ? 0 : 0.55} thickness={0.8} transparent opacity={isOpt ? 1 : 0.85} clearcoat={1} toneMapped={!isOpt} />
       </mesh>
       {(hover || (isOpt && done)) && (
         <Html position={[0, target + 0.45, 0]} center distanceFactor={7} zIndexRange={[20, 0]}>

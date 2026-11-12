@@ -133,11 +133,11 @@ export function GlassPanel({ children, className = "", inner = "" }: { children:
     <div ref={ref}
       onPointerMove={(e) => { const r = ref.current!.getBoundingClientRect(); ref.current!.style.setProperty("--mx", `${e.clientX - r.left}px`); ref.current!.style.setProperty("--my", `${e.clientY - r.top}px`); }}
       className={`group relative rounded-3xl bg-[linear-gradient(150deg,rgba(243,236,221,0.28),rgba(243,236,221,0.05)_35%,rgba(243,236,221,0.03)_65%,rgba(232,176,75,0.30))] p-px shadow-[0_20px_60px_-20px_rgba(0,0,0,0.6)] ${className}`}>
-      <div className={`relative h-full overflow-hidden rounded-[calc(1.5rem-1px)] bg-[rgba(18,22,50,0.58)] backdrop-blur-2xl backdrop-saturate-150 ${inner}`}>
+      <div className="relative h-full overflow-hidden rounded-[calc(1.5rem-1px)] bg-[rgba(18,22,50,0.58)] backdrop-blur-2xl backdrop-saturate-150">
         <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
         <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
           style={{ background: "radial-gradient(380px circle at var(--mx, 50%) var(--my, 50%), rgba(232,176,75,0.10), transparent 60%)" }} />
-        <div className="relative h-full">{children}</div>
+        <div className={`relative h-full ${inner}`}>{children}</div>
       </div>
     </div>
   );
