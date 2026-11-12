@@ -4,3 +4,6 @@ __pycache__/
 .pytest_cache/
 results_log.txt
 streamlit_log.txt
+.playwright-mcp/
+export_log.txt
+~$*

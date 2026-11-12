@@ -59,6 +59,19 @@ There is no single correct plan, so FloodQAOA uses **QAOA in Qiskit** to compute
 ![Architecture](results/figures/architecture.png)
 
 
+## Interactive website
+
+`web/` is a Next.js + Tailwind + Motion site that tells the story and **replays real QAOA training data**.
+Every bar and number is exported from our Qiskit runs by `python -m floodqaoa.export_web`, which asserts
+that each replayed run matches `results/results.json`.
+
+```bash
+cd web && npm install && npm run dev      # http://localhost:3000
+```
+
+Sections: qubit-collapse loader → hero → live Sindh map (λ slider) → flood-to-qubits explainer →
+**"Watch QAOA think" lab + quantum race** → Pareto front → results bento → honest limitations → architecture.
+
 ## Run it
 
 ```bash

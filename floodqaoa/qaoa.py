@@ -135,19 +135,26 @@ class QAOARunner:
         val = float(p_sorted[:k] @ e_sorted[:k]) + (self.alpha - mass_before) * e_sorted[k]
         return val / self.alpha
 
+    track_idx: np.ndarray | None = None  # optional: record probabilities of these basis states per evaluation
+
     def cost(self, theta) -> float:
-        val = self.evaluate(self.probabilities(theta))
+        probs = self.probabilities(theta)
+        val = self.evaluate(probs)
         self.history.append(val)
+        if self.track_idx is not None:
+            self.snaps.append(probs[self.track_idx].copy())
         return val
 
     def optimise(self, inits, maxiter=250, seed=0):
         best = None
+        self.best_snaps = []
         for theta0 in inits:
-            self.history = []
+            self.history, self.snaps = [], []
             res = minimize(self.cost, np.asarray(theta0, float), method="COBYLA",
                            options={"maxiter": maxiter, "rhobeg": 0.4})
             if best is None or res.fun < best[0].fun:
                 best = (res, list(self.history))
+                self.best_snaps = list(self.snaps)
         return best
 
     def sample(self, theta, shots, seed):
@@ -170,10 +177,11 @@ def default_inits(p: int, rng: np.random.Generator, n_random: int, warm=None):
 
 
 def run_variant(variant, op, offset, T, S, p, lam, shots=1024, seed=0, alpha=0.1,
-                n_random=2, warm=None, maxiter=250):
+                n_random=2, warm=None, maxiter=250, track_idx=None):
     cfg = VARIANTS[variant]
     t0 = time.perf_counter()
     runner = QAOARunner(op, offset, T, S, p, cfg["mixer"], cfg["objective"], alpha)
+    runner.track_idx = track_idx
     rng = np.random.default_rng(seed)
     res, hist = runner.optimise(default_inits(p, rng, n_random, warm), maxiter=maxiter)
     probs = runner.probabilities(res.x)

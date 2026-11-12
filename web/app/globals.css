@@ -1,0 +1,151 @@
+@import "tailwindcss";
+
+:root {
+  --ink: #04070d;
+  --surface: #0a111d;
+  --surface-2: #0e1726;
+  --line: rgba(148, 163, 184, 0.12);
+  --text: #e6edf6;
+  --muted: #8b9ab0;
+  --flood: #22d3ee;
+  --quantum: #a78bfa;
+  --signal: #fbbf24;
+  --danger: #fb7185;
+  --win: #34d399;
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-flood: var(--flood);
+  --color-quantum: var(--quantum);
+  --color-signal: var(--signal);
+  --color-danger: var(--danger);
+  --color-win: var(--win);
+  --font-sans: var(--font-jakarta);
+  --font-mono: var(--font-jetbrains);
+  --font-serif: var(--font-instrument);
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--ink);
+}
+
+body {
+  background: var(--ink);
+  color: var(--text);
+  font-family: var(--font-jakarta), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(34, 211, 238, 0.3);
+}
+
+/* film grain */
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: -50%;
+  pointer-events: none;
+  z-index: 60;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  animation: grain 8s steps(10) infinite;
+}
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-5%, 3%); }
+  40% { transform: translate(3%, -6%); }
+  60% { transform: translate(-7%, 2%); }
+  80% { transform: translate(4%, 5%); }
+}
+
+.glass {
+  background: linear-gradient(180deg, rgba(20, 30, 48, 0.55), rgba(10, 17, 29, 0.55));
+  border: 1px solid var(--line);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.text-gradient {
+  background: linear-gradient(100deg, #e6edf6 10%, #22d3ee 45%, #a78bfa 75%, #e6edf6 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shine 7s linear infinite;
+}
+@keyframes shine {
+  to { background-position: -200% center; }
+}
+
+.grid-bg {
+  background-image:
+    linear-gradient(to right, rgba(148, 163, 184, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+}
+
+/* animated conic border */
+.beam-border {
+  position: relative;
+  isolation: isolate;
+}
+.beam-border::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(from var(--angle), transparent 0 70%, var(--flood) 80%, var(--quantum) 90%, transparent 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: spin-angle 5s linear infinite;
+  z-index: -1;
+}
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes spin-angle {
+  to { --angle: 360deg; }
+}
+
+input[type="range"].slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--win), var(--flood), var(--signal));
+  outline: none;
+}
+input[type="range"].slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.35), 0 0 24px rgba(34, 211, 238, 0.7);
+  cursor: grab;
+  transition: transform 0.15s;
+}
+input[type="range"].slider::-webkit-slider-thumb:active { transform: scale(1.2); cursor: grabbing; }
+input[type="range"].slider::-moz-range-thumb {
+  width: 22px; height: 22px; border: 0; border-radius: 999px; background: #fff;
+  box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.35), 0 0 24px rgba(34, 211, 238, 0.7);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grain::after, .text-gradient, .beam-border::before { animation: none; }
+  html { scroll-behavior: auto; }
+}
