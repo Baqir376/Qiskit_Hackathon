@@ -78,7 +78,7 @@ function Register({ measured, onToggle }: { measured: boolean; onToggle: () => v
   const [hovered, setHovered] = useState<number | null>(null);
   useFrame(({ pointer }, dt) => {
     const g = group.current!;
-    g.rotation.y = THREE.MathUtils.damp(g.rotation.y, -0.35 + pointer.x * 0.45, 3, dt);
+    g.rotation.y = THREE.MathUtils.damp(g.rotation.y, -0.18 + pointer.x * 0.4, 3, dt);
     g.rotation.x = THREE.MathUtils.damp(g.rotation.x, 0.28 - pointer.y * 0.22, 3, dt);
   });
   return (
@@ -113,7 +113,7 @@ function Register({ measured, onToggle }: { measured: boolean; onToggle: () => v
 
 export default function QubitRegister3D({ measured, onToggle }: { measured: boolean; onToggle: () => void }) {
   return (
-    <Canvas camera={{ position: [0, 4.4, 9.6], fov: 34 }} dpr={[1, 1.75]} gl={{ antialias: true, alpha: true }} data-cursor={measured ? "reset" : "measure"}>
+    <Canvas camera={{ position: [0, 5.2, 10.5], fov: 36 }} dpr={[1, 1.75]} gl={{ antialias: true, alpha: true }} data-cursor={measured ? "reset" : "measure"}>
       <ambientLight intensity={0.35} />
       <directionalLight position={[4, 6, 3]} intensity={1.2} />
       <pointLight position={[-4, 2, -2]} intensity={14} color="#E0533D" />

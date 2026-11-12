@@ -2,6 +2,7 @@
 import { motion, useScroll, useTransform } from "motion/react";
 import { useRef } from "react";
 import { BASE_PATH } from "@/lib/data";
+import Backdrop from "./Backdrop";
 import { MagneticButton, SectionHeader } from "./ui";
 
 /** Apple-style product reveal: the workspace screen tilts up into view as you scroll. */
@@ -14,7 +15,8 @@ export default function AppTeaser() {
   const glow = useTransform(scrollYProgress, [0, 1], [0, 0.55]);
 
   return (
-    <section className="relative px-5 py-32 md:px-8">
+    <section className="relative isolate overflow-clip px-5 py-32 md:px-8">
+      <Backdrop layers={["aurora", "bubbles"]} tone="warm" />
       <SectionHeader id="lab" kicker="03 · The Quantum Workspace"
         title={<>Run the quantum dispatcher <span className="font-serif font-normal italic text-gradient">yourself</span></>}
         sub="Pick a priority, pick an algorithm, press Run. A real 12-qubit QAOA simulation runs in your browser (our Qiskit circuit, verified to match Qiskit), and you watch the quantum state reshape in 3D until the best dispatch plan rises to the top." />

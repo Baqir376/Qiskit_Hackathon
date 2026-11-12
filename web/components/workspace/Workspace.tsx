@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BASE_PATH, lamIndex, orderByObjective, useData, VCOLOR, VSHORT, type VariantKey } from "@/lib/data";
 import { costDiagonal, DIM, evaluate, isFeasible, multiStart, qaoaProbabilities, sampleShots, sortedOrder, type Scenario } from "@/lib/qsim";
 import SindhMap, { TEAM_COL, TEAM_ICON } from "../SindhMap";
-import { ease } from "../ui";
+import { ease, GlassPanel, Ticker } from "../ui";
 
 const Skyline3D = dynamic(() => import("../three/Skyline3D"), { ssr: false, loading: () => <div className="flex h-full items-center justify-center font-mono text-xs text-muted">loading 3D…</div> });
 
@@ -33,6 +33,7 @@ export default function Workspace() {
   const [evalNo, setEvalNo] = useState(0);
   const [result, setResult] = useState<{ plan: [string, string][]; found: boolean; pOpt: number; pValid: number; shots: number; validShots: number } | null>(null);
   const cancel = useRef(false);
+  const [toast, setToast] = useState<{ ok: boolean; text: string } | null>(null);
 
   const sc: Scenario = useMemo(() => ({ T: 3, S: 4, benefit: d.benefit, travel: d.travel_h, corridor: d.corridor, congestion: d.congestion_h, f1max: d.meta.f1max, f2max: d.meta.f2max }), [d]);
   const rank = useMemo(() => orderByObjective(d, lam), [d, lam]);
@@ -71,6 +72,9 @@ export default function Workspace() {
       found: best >= 0 && optSet.has(best), pOpt, pValid, shots: d.meta.shots, validShots,
     });
     setPhase("done");
+    const ok = best >= 0 && optSet.has(best);
+    setToast({ ok, text: ok ? `Optimal plan found · P(opt) ${pOpt.toFixed(3)}` : "Run finished: plan differs from the exact optimum" });
+    setTimeout(() => setToast(null), 4200);
   }, [d, lam, optSet]);
 
   const runLive = useCallback(() => {
@@ -128,6 +132,23 @@ export default function Workspace() {
   }, [ref, v, sc, lam, d, finish]);
 
   const run = () => (mode === "live" ? runLive() : runReplay());
+  const runRef = useRef(run);
+  runRef.current = run;
+  const phaseRef = useRef(phase);
+  phaseRef.current = phase;
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.target as HTMLElement)?.tagName === "INPUT" || e.metaKey || e.ctrlKey) return;
+      const k = e.key.toLowerCase();
+      if (k === "r" && phaseRef.current !== "running") runRef.current();
+      else if (["1", "2", "3", "4"].includes(k)) setV(KEYS[+k - 1]);
+      else if (k === "arrowleft") setLam((l) => Math.max(0, Math.round((l - 0.1) * 10) / 10));
+      else if (k === "arrowright") setLam((l) => Math.min(1, Math.round((l + 0.1) * 10) / 10));
+      else if (k === "m") setMode((m) => (m === "live" ? "replay" : "live"));
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
   const pOptNow = [...optSet].reduce((a, j) => a + probs[j], 0);
   const color = VCOLOR[v];
 
@@ -214,7 +235,7 @@ export default function Workspace() {
         </div>
 
         {/* 3D */}
-        <div className="glass relative flex h-[min(78vh,720px)] min-h-[480px] flex-col overflow-hidden rounded-3xl">
+        <GlassPanel className="h-[min(78vh,720px)] min-h-[480px]" inner="flex flex-col">
           <div className="flex items-center justify-between px-5 pt-4">
             <div>
               <div className="font-mono text-[10px] uppercase tracking-widest text-muted">Quantum state · 24 valid dispatch plans</div>
@@ -226,14 +247,14 @@ export default function Workspace() {
             <Skyline3D probs={probs} rank={rank} optimal={optSet} invalid={invalid} labels={labels} color={color} done={phase === "done"} />
           </div>
           <div className="grid grid-cols-3 gap-px border-t border-line bg-line">
-            <Metric label="P(optimal plan)" value={pOptNow.toFixed(3)} color={color} />
-            <Metric label="P(valid plan)" value={`${((1 - invalid) * 100).toFixed(1)}%`} color="#9CCB7A" />
-            <div className="bg-surface px-4 py-3">
+            <Metric label="P(optimal plan)" value={pOptNow} format={(x) => x.toFixed(3)} color={color} />
+            <Metric label="P(valid plan)" value={(1 - invalid) * 100} format={(x) => `${x.toFixed(1)}%`} color="#9CCB7A" />
+            <div className="bg-[rgba(18,22,50,0.6)] px-4 py-3">
               <div className="font-mono text-[9px] uppercase tracking-widest text-muted">objective ↓</div>
               <Spark data={hist} color={color} />
             </div>
           </div>
-        </div>
+        </GlassPanel>
 
         {/* result */}
         <div className="flex flex-col gap-4">
@@ -266,11 +287,33 @@ export default function Workspace() {
               )}
             </AnimatePresence>
           </Card>
-          <div className="glass relative aspect-[520/640] overflow-hidden rounded-3xl p-2">
+          <GlassPanel inner="aspect-[520/640] p-2">
             <SindhMap plan={result?.plan ?? []} pulse={false} neutral={!result} />
-          </div>
+          </GlassPanel>
         </div>
       </div>
+      <div className="mt-5 flex flex-wrap items-center justify-center gap-3 font-mono text-[10px] text-muted">
+        {[["R", "run"], ["1–4", "algorithm"], ["← →", "priority"], ["M", "live / replay"]].map(([k, l]) => (
+          <span key={k} className="flex items-center gap-1.5"><kbd className="rounded-md border border-line bg-white/5 px-1.5 py-0.5 text-text shadow-[inset_0_-1px_0_rgba(255,255,255,0.08)]">{k}</kbd>{l}</span>
+        ))}
+      </div>
+      <AnimatePresence>
+        {toast && (
+          <motion.div initial={{ opacity: 0, y: -20, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -12 }}
+            transition={{ type: "spring", stiffness: 300, damping: 24 }} role="status"
+            className="fixed right-6 top-20 z-[60] flex items-center gap-3 rounded-2xl border border-white/15 bg-[rgba(18,22,50,0.8)] px-4 py-3 text-sm shadow-[0_20px_60px_rgba(0,0,0,0.5)] backdrop-blur-2xl">
+            <span className="relative flex h-8 w-8 items-center justify-center rounded-full" style={{ background: toast.ok ? "rgba(156,203,122,0.18)" : "rgba(224,83,61,0.18)" }}>
+              {toast.ok ? "✓" : "!"}
+              {toast.ok && Array.from({ length: 10 }).map((_, i) => {
+                const a = (i / 10) * Math.PI * 2;
+                return <motion.span key={i} className="absolute h-1.5 w-1.5 rounded-full" style={{ background: ["#E8B04B", "#9CCB7A", "#8F9CFF"][i % 3] }}
+                  initial={{ x: 0, y: 0, opacity: 1 }} animate={{ x: Math.cos(a) * 28, y: Math.sin(a) * 28, opacity: 0 }} transition={{ duration: 0.8 }} />;
+              })}
+            </span>
+            <span className={toast.ok ? "text-win" : "text-danger"}>{toast.text}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <p className="mt-6 text-center text-[11px] text-muted">Real places in Sindh; population, need and access figures are synthetic. Not for operational use. <a className="underline" href={`${BASE_PATH}/`}>Back to overview</a></p>
     </div>
   );
@@ -278,18 +321,18 @@ export default function Workspace() {
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="glass rounded-3xl p-4">
+    <GlassPanel inner="p-4">
       <div className="mb-3 font-mono text-[10px] uppercase tracking-widest text-muted">{title}</div>
       {children}
-    </div>
+    </GlassPanel>
   );
 }
 
-function Metric({ label, value, color }: { label: string; value: string; color: string }) {
+function Metric({ label, value, color, format }: { label: string; value: number; color: string; format: (v: number) => string }) {
   return (
-    <div className="bg-surface px-4 py-3">
+    <div className="bg-[rgba(18,22,50,0.6)] px-4 py-3">
       <div className="font-mono text-[9px] uppercase tracking-widest text-muted">{label}</div>
-      <div className="font-mono text-2xl font-semibold tabular-nums" style={{ color }}>{value}</div>
+      <div className="font-mono text-2xl font-semibold tabular-nums" style={{ color, textShadow: `0 0 18px ${color}66` }}><Ticker value={value} format={format} /></div>
     </div>
   );
 }

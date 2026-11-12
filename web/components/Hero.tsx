@@ -1,7 +1,7 @@
 "use client";
 import { AnimatePresence, motion, useScroll, useTransform } from "motion/react";
 import dynamic from "next/dynamic";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BASE_PATH } from "@/lib/data";
 import FlowField from "./FlowField";
 import { CountUp, MagneticButton, ease } from "./ui";
@@ -13,6 +13,12 @@ const words = ["When", "a", "third", "of", "a", "country", "floods,"];
 export default function Hero({ start }: { start: boolean }) {
   const ref = useRef<HTMLElement>(null);
   const [measured, setMeasured] = useState(false);
+  const touched = useRef(false);
+  useEffect(() => {
+    if (!start) return;
+    const id = setInterval(() => { if (!touched.current) setMeasured((m) => !m); }, 4200);
+    return () => clearInterval(id);
+  }, [start]);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], [0, 140]);
   const op = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
@@ -22,7 +28,6 @@ export default function Hero({ start }: { start: boolean }) {
   return (
     <section ref={ref} id="top" className="relative flex min-h-[100svh] items-center overflow-hidden">
       <FlowField className="absolute inset-0 h-full w-full opacity-40" density={0.00025} />
-      <motion.div aria-hidden className="ajrak-tex absolute inset-0 opacity-[0.07] [mask-image:radial-gradient(ellipse_at_70%_45%,black,transparent_70%)]" animate={{ backgroundPositionX: ["0px", "64px"], backgroundPositionY: ["0px", "64px"] }} transition={{ duration: 12, repeat: Infinity, ease: "linear" }} />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_70%_40%,rgba(232,176,75,0.13),transparent_55%),radial-gradient(ellipse_at_bottom_left,rgba(224,83,61,0.12),transparent_50%),radial-gradient(ellipse_at_top_left,rgba(43,53,144,0.35),transparent_60%)]" />
       <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-b from-transparent to-ink" />
 
@@ -71,7 +76,7 @@ export default function Hero({ start }: { start: boolean }) {
 
         <motion.div style={{ scale: scale3d }} initial={{ opacity: 0, scale: 0.9 }} animate={start ? { opacity: 1 } : {}} transition={{ duration: 1.4, ease, delay: 0.2 }}
           className="relative order-1 h-[42vh] min-h-[320px] lg:order-2 lg:h-[72vh]">
-          <div className="absolute inset-0 [mask-image:radial-gradient(ellipse_at_center,black_55%,transparent_78%)]">{start && <QubitRegister3D measured={measured} onToggle={() => setMeasured((m) => !m)} />}</div>
+          <div className="absolute inset-0 [mask-image:radial-gradient(ellipse_at_center,black_55%,transparent_78%)]">{start && <QubitRegister3D measured={measured} onToggle={() => { touched.current = true; setMeasured((m) => !m); }} />}</div>
           <div className="pointer-events-none absolute inset-x-0 bottom-2 flex justify-center">
             <AnimatePresence mode="wait">
               <motion.div key={String(measured)} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}

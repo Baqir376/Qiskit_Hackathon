@@ -161,8 +161,5 @@ input[type="range"].slider::-moz-range-thumb {
 h1, h2, h3 { font-family: var(--font-fraunces), Georgia, serif; font-optical-sizing: auto; letter-spacing: -0.02em; }
 h1 { font-variation-settings: "SOFT" 50, "WONK" 1; }
 
-/* Ajrak lattice: 8-point stars in madder + ivory on indigo, used as a slow-drifting texture */
-.ajrak-tex {
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'><g fill='none' stroke-width='1.2'><path d='M32 14 L36 28 L50 32 L36 36 L32 50 L28 36 L14 32 L28 28 Z' stroke='%23E0533D'/><rect x='24' y='24' width='16' height='16' transform='rotate(45 32 32)' stroke='%23F3ECDD' stroke-opacity='.55'/><circle cx='32' cy='32' r='3' fill='%23E8B04B'/><circle cx='0' cy='0' r='4' stroke='%23F3ECDD' stroke-opacity='.4'/><circle cx='64' cy='0' r='4' stroke='%23F3ECDD' stroke-opacity='.4'/><circle cx='0' cy='64' r='4' stroke='%23F3ECDD' stroke-opacity='.4'/><circle cx='64' cy='64' r='4' stroke='%23F3ECDD' stroke-opacity='.4'/></g></svg>");
-  background-size: 64px 64px;
-}
+@keyframes grid-flow { to { background-position: 0 60px, 0 60px; } }
+

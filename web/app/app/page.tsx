@@ -1,6 +1,7 @@
 "use client";
 import { motion, MotionConfig } from "motion/react";
 import Cursor from "@/components/Cursor";
+import Backdrop from "@/components/Backdrop";
 import Workspace from "@/components/workspace/Workspace";
 import { BASE_PATH, DataCtx } from "@/lib/data";
 import { useFlood } from "@/lib/useFlood";
@@ -10,7 +11,7 @@ export default function AppPage() {
   return (
     <MotionConfig reducedMotion="user">
       <Cursor />
-      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_at_top,rgba(232,176,75,0.08),transparent_50%),radial-gradient(ellipse_at_bottom_right,rgba(143,156,255,0.08),transparent_50%)]" />
+      <div className="fixed inset-0 isolate"><Backdrop layers={["aurora", "contours", "grid"]} tone="mixed" /></div>
       <motion.header initial={{ y: -60, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ type: "spring", stiffness: 200, damping: 24 }}
         className="fixed inset-x-0 top-0 z-50 border-b border-line bg-[#0C0F1E]/85 backdrop-blur-xl">
         <div className="mx-auto flex max-w-[1400px] items-center gap-4 px-4 py-3 md:px-6">

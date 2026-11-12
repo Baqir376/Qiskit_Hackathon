@@ -1,6 +1,7 @@
 "use client";
 import { motion } from "motion/react";
 import { useData, VCOLOR, VSHORT, type VariantKey } from "@/lib/data";
+import Backdrop from "./Backdrop";
 import { CountUp, Reveal, SectionHeader, TiltCard } from "./ui";
 
 const KEYS: VariantKey[] = ["A", "B", "C", "D"];
@@ -16,7 +17,8 @@ export default function Results() {
   const noiseD = d.noise.rows.find((r) => r.variant === "D")!;
 
   return (
-    <section className="relative px-5 py-32 md:px-8">
+    <section className="relative isolate overflow-clip px-5 py-32 md:px-8">
+      <Backdrop layers={["aurora", "bubbles"]} tone="cool" />
       <SectionHeader id="results" kicker="05 · Results" title={<>Measured, not <span className="font-serif font-normal italic text-signal">imagined</span></>}
         sub={<>Every number is averaged over 11 priority settings and checked against exact brute force over all 4,096 states. Simulated with Qiskit 2.6 (p = {d.meta.p}, {d.meta.shots} shots).</>} />
 

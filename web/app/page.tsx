@@ -1,7 +1,7 @@
 "use client";
 import { MotionConfig } from "motion/react";
 import { useCallback, useState } from "react";
-import AjrakBand from "@/components/AjrakBand";
+import ScrollRail from "@/components/ScrollRail";
 import AppTeaser from "@/components/AppTeaser";
 import Closing from "@/components/Closing";
 import Cursor from "@/components/Cursor";
@@ -27,15 +27,13 @@ export default function Landing() {
       {data && (
         <DataCtx.Provider value={data}>
           <Nav show={intro} />
+          <ScrollRail show={intro} />
           <main>
             <Hero start={intro} />
-            <AjrakBand />
             <Dilemma />
             <Qubits />
-            <AjrakBand reverse />
             <AppTeaser />
             <Pareto />
-            <AjrakBand />
             <Results />
             <Closing />
           </main>

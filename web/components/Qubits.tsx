@@ -3,6 +3,7 @@ import { motion, useInView } from "motion/react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useData } from "@/lib/data";
 import { TEAM_COL, TEAM_ICON } from "./SindhMap";
+import Backdrop from "./Backdrop";
 import { SectionHeader } from "./ui";
 
 const STEPS: { title: string; body: ReactNode; tag: string }[] = [
@@ -30,8 +31,23 @@ const STEPS: { title: string; body: ReactNode; tag: string }[] = [
 
 export default function Qubits() {
   const [step, setStep] = useState(0);
+  const boxRef = useRef<HTMLDivElement>(null);
+  const visible = useInView(boxRef, { amount: 0.4 });
+  const lastScroll = useRef(0);
+  useEffect(() => {
+    const onS = () => { lastScroll.current = Date.now(); };
+    window.addEventListener("scroll", onS, { passive: true });
+    return () => window.removeEventListener("scroll", onS);
+  }, []);
+  // autoplay: if the visual is on screen and the reader pauses, keep the story moving by itself
+  useEffect(() => {
+    if (!visible) return;
+    const id = setInterval(() => { if (Date.now() - lastScroll.current > 3500) setStep((s) => (s + 1) % STEPS.length); }, 3800);
+    return () => clearInterval(id);
+  }, [visible]);
   return (
-    <section className="relative px-5 py-32 md:px-8">
+    <section className="relative isolate overflow-clip px-5 py-32 md:px-8">
+      <Backdrop layers={["aurora", "grid"]} tone="mixed" />
       <SectionHeader
         id="qubits"
         kicker="02 · From flood to qubits"
@@ -43,7 +59,17 @@ export default function Qubits() {
           {STEPS.map((s, i) => <StepText key={i} i={i} s={s} active={step === i} onActive={setStep} />)}
         </div>
         <div className="order-1 lg:order-2">
-          <div className="sticky top-28">
+          <div ref={boxRef} className="sticky top-28">
+            <div className="mb-3 flex flex-wrap gap-1.5">
+              {STEPS.map((s, i) => (
+                <button key={s.tag} onClick={() => { setStep(i); lastScroll.current = Date.now(); }} data-cursor="show"
+                  className={`relative overflow-hidden rounded-full border px-3 py-1 font-mono text-[10px] tracking-widest transition-colors ${step === i ? "border-flood/60 text-flood" : "border-line text-muted hover:text-text"}`}>
+                  {step === i && <motion.span layoutId="qstep" className="absolute inset-0 bg-flood/10" />}
+                  {step === i && <motion.span key={`bar${i}`} className="absolute bottom-0 left-0 h-[2px] bg-flood" initial={{ width: "0%" }} animate={{ width: "100%" }} transition={{ duration: 3.8, ease: "linear" }} />}
+                  <span className="relative">0{i + 1} {s.tag}</span>
+                </button>
+              ))}
+            </div>
             <QubitGrid step={step} />
           </div>
         </div>

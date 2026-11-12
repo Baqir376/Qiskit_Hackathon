@@ -2,6 +2,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { lamIndex, optimumIndex, useData } from "@/lib/data";
+import Backdrop from "./Backdrop";
 import SindhMap, { TEAM_COL, TEAM_ICON } from "./SindhMap";
 import { Reveal, SectionHeader, ease } from "./ui";
 
@@ -15,7 +16,8 @@ export default function Dilemma() {
   const label = lam < 0.25 ? "Maximise people reached" : lam > 0.75 ? "Fastest response" : "Balanced";
 
   return (
-    <section className="relative px-5 py-32 md:px-8">
+    <section className="relative isolate overflow-clip px-5 py-32 md:px-8">
+      <Backdrop layers={["aurora", "contours"]} tone="cool" />
       <SectionHeader
         id="dilemma"
         kicker="01 · The dilemma"

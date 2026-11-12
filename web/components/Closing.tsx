@@ -2,6 +2,8 @@
 import { motion } from "motion/react";
 import { useState } from "react";
 import { BASE_PATH } from "@/lib/data";
+import Backdrop from "./Backdrop";
+import FlowField from "./FlowField";
 import { MagneticButton, Reveal, SectionHeader } from "./ui";
 
 const REPO = "https://github.com/Baqir376/Qiskit_Hackathon";
@@ -27,7 +29,8 @@ const PIPE = [
 export default function Closing() {
   return (
     <>
-      <section className="relative px-5 py-32 md:px-8">
+      <section className="relative isolate overflow-clip px-5 py-32 md:px-8">
+        <Backdrop layers={["aurora", "contours"]} tone="warm" />
         <SectionHeader id="honest" kicker="06 · What didn't work" title={<>The honest <span className="font-serif font-normal italic text-danger">scoreboard</span></>}
           sub="The brief says limitations count in our favour. Here's ours, measured, not hand-waved." />
         <div className="mx-auto mt-14 grid max-w-6xl gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -43,7 +46,8 @@ export default function Closing() {
         </div>
       </section>
 
-      <section className="relative px-5 py-32 md:px-8">
+      <section className="relative isolate overflow-clip px-5 py-32 md:px-8">
+        <Backdrop layers={["aurora", "grid"]} tone="cool" />
         <SectionHeader id="architecture" kicker="07 · Architecture" title={<>Hybrid quantum–classical <span className="font-serif font-normal italic text-quantum">loop</span></>} />
         <Reveal className="mx-auto mt-14 max-w-6xl">
           <div className="glass relative overflow-hidden rounded-3xl p-8">
@@ -73,7 +77,9 @@ export default function Closing() {
         </Reveal>
       </section>
 
-      <section className="relative overflow-hidden px-5 pb-16 pt-32 md:px-8">
+      <section className="relative isolate overflow-clip px-5 pb-16 pt-32 md:px-8">
+        <FlowField className="absolute inset-0 -z-10 h-full w-full opacity-50" density={0.0003} />
+        <Backdrop layers={["aurora"]} tone="warm" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(232,176,75,0.12),transparent_60%)]" />
         <div className="relative mx-auto max-w-4xl text-center">
           <Reveal>

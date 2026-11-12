@@ -2,6 +2,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { useData } from "@/lib/data";
+import Backdrop from "./Backdrop";
 import { Reveal, SectionHeader } from "./ui";
 
 export default function Pareto() {
@@ -22,7 +23,8 @@ export default function Pareto() {
   const unsupported = front.filter((j) => !d.supported[j]);
 
   return (
-    <section className="relative px-5 py-32 md:px-8">
+    <section className="relative isolate overflow-clip px-5 py-32 md:px-8">
+      <Backdrop layers={["aurora", "contours"]} tone="warm" />
       <SectionHeader
         id="pareto"
         kicker="04 · The trade-off curve"
