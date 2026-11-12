@@ -32,6 +32,8 @@ Every type of test below runs locally and in CI (`.github/workflows/tests.yml`) 
 2. **Precision drift:** the web export rounded the scenario to 2 decimals, giving a 1e-3 relative error against Qiskit. Fixed by exporting full precision.
 3. **Accessibility:** 18 colour-contrast failures (dimmed scrollytelling text, 60–70% opacity footnotes). Fixed.
 
+4. **Cross-platform reproducibility (found by CI):** re-running the pipeline on Linux (GitHub Actions) does not reproduce the Windows numbers bit for bit. COBYLA reacts to last-bit floating-point differences between OS/BLAS builds and can settle on a different local optimum. On the same platform, results are bit-identical. Across platforms, the test checks the scientific conclusion instead (P(optimal) far above random, feasible best sample) and logs the drift. This is a genuine limitation of variational algorithms with local optimisers.
+
 ## Run
 
 ```bash

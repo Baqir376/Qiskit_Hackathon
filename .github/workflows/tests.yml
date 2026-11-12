@@ -17,7 +17,7 @@ jobs:
       - name: Lint (ruff)
         run: ruff check floodqaoa tests app.py make_report.py --select E,F,W,B --ignore E501,E702,B008,B905,E731
       - name: Unit + property + regression + integration tests (pytest)
-        run: pytest -q --cov=floodqaoa --cov-report=term
+        run: pytest -q -rA --cov=floodqaoa --cov-report=term -s -k "not streamlit" && pytest -q -k streamlit
       - name: Dependency security audit
         run: pip-audit -r requirements.txt
   web:
