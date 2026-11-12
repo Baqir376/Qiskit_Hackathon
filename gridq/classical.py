@@ -60,6 +60,11 @@ def exhaustive_solve(inst: Instance, max_free: int = 24, chunk: int = 1 << 16):
 def milp_solve(inst: Instance, time_limit: float = 120.0):
     t0 = time.perf_counter()
     N, T = inst.N, inst.T
+    kf = np.array([float(f.get("feeder_cap", np.inf) or np.inf) for f in inst.feeders])
+    clash = inst.critical[:, None] & (inst.avail == 1) & (inst.D > kf[:, None] + 1e-9)
+    if clash.any():   # critical protection vs feeder thermal limit: infeasible, surfaced explicitly (spec 29.1)
+        return dict(status=2, message="infeasible: critical feeder demand exceeds its thermal limit",
+                    seconds=time.perf_counter() - t0, X=None, J=None, n_vars=0, n_cons=0, n_products=0)
     l1, l2, l3 = inst.lambdas
     s1, s2, s3 = inst.scales
     fx = inst.fixed()
@@ -72,7 +77,7 @@ def milp_solve(inst: Instance, time_limit: float = 120.0):
     prod_terms: dict[tuple[int, int], float] = {}
     lin = np.zeros(nx)
     const = 0.0
-    E = inst.E
+    E = np.where(inst.E > 0, inst.E, 1.0)   # E_i = 0 -> D_it = 0, contributes nothing (rho_i = 0), avoid 0/0
     for i in range(N):
         for t in range(T):
             lin[xi(i, t)] += -l1 / s1 * inst.c[i] * inst.D[i, t] * inst.dt
@@ -85,8 +90,12 @@ def milp_solve(inst: Instance, time_limit: float = 120.0):
             g[xi(i, t)] = g.get(xi(i, t), 0.0) - inst.D[i, t] * inst.dt / E[i]
         keys = sorted(g)
         coef = l2 / s2 * w
+        # rho_k = k0_k - a_k with k0_k = 1 if E_k > 0 else 0 (rho = 0 for zero-demand feeders), so
+        # rho_i - rho_j = cst + g.x  with cst = k0_i - k0_j ;  (cst + g.x)^2 = cst^2 + 2 cst g.x + (g.x)^2
+        cst = float(inst.E[i] > 0) - float(inst.E[j] > 0)
+        const += coef * cst ** 2
         for a in keys:
-            lin[a] += coef * g[a] ** 2
+            lin[a] += coef * (g[a] ** 2 + 2 * cst * g[a])
         for a, b in itertools.combinations(keys, 2):
             prod_terms[(a, b)] = prod_terms.get((a, b), 0.0) + coef * 2 * g[a] * g[b]
     prods = [k for k, v in prod_terms.items() if abs(v) > 1e-15]
@@ -113,18 +122,8 @@ def milp_solve(inst: Instance, time_limit: float = 120.0):
     for i in range(N):
         if inst.min_on[i] > 0:
             add({xi(i, t): 1 for t in range(T)}, inst.min_on[i], np.inf)
-        L = inst.max_off[i]
-        h = 0 if inst.off_history is None else int(inst.off_history[i])
-        if L < T + h:
-            # windows fully inside the horizon
-            for t in range(0, T - L):
-                add({xi(i, k): 1 for k in range(t, t + L + 1)}, 1, np.inf)
-            if h > 0:  # first window shortened by outage history
-                end = L + 1 - h
-                if end <= 0:
-                    add({}, 1, np.inf)  # already violated -> infeasible
-                else:
-                    add({xi(i, k): 1 for k in range(0, min(end, T))}, 1, np.inf)
+        for win in inst.outage_windows(i):      # windows over available hours (history-aware)
+            add({xi(i, k): 1 for k in win}, 1, np.inf)   # empty window -> 0 >= 1 -> infeasible
     for k, (i, t) in enumerate(s_list):
         if t == 0:
             add({s_off + k: 1, xi(i, 0): -1}, -inst.x0[i], np.inf)       # s >= x - x0
@@ -174,11 +173,12 @@ def _greedy(inst: Instance, order_key):
     on_count = np.zeros(N, int)
     members = inst.transformer_members()
     tr_of = {i: j for j, mem in members.items() for i in mem}
+    fx = inst.fixed()
     for t in range(T):
         cap = inst.Pmax[t]
         tcap = dict(inst.K)
         def fits(i):
-            if inst.avail[i, t] == 0 or inst.D[i, t] > cap + 1e-9:
+            if fx[i, t] == 0 or inst.D[i, t] > cap + 1e-9:
                 return False
             j = tr_of.get(i)
             return j is None or inst.D[i, t] <= tcap[j] + 1e-9
@@ -194,7 +194,7 @@ def _greedy(inst: Instance, order_key):
         for i in [i for i in range(N) if inst.critical[i]] + sorted(urgent, key=lambda i: -inst.c[i]) + sorted(range(N), key=lambda i: order_key(i, t)):
             if X[i, t] == 0 and fits(i):
                 take(i)
-        run = np.where(X[:, t] == 0, run + 1, 0)
+        run = np.where(inst.avail[:, t] == 1, np.where(X[:, t] == 0, run + 1, 0), 0)
         on_count += X[:, t]
     return X
 

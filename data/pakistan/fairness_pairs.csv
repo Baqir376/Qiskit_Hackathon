@@ -1,4 +1,4 @@
 feeder_i,feeder_j,weight
 RSA,RSB,1.0
-RSA,RSC,1.0
-RSB,RSC,1.0
+TEX,MFG,1.0
+CMA,CMB,1.0

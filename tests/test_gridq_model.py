@@ -67,6 +67,12 @@ def test_max_consecutive_off_beginning_middle_end(row, ok):
     assert inst.is_feasible_batch(np.array([[row]]))[0] == ok
 
 
+def test_unavailable_hours_are_not_outages():
+    inst = _inst(np.array([[0, 0, 0, 1, 1]], float), [9] * 5, max_off=[1], avail=np.array([[0, 0, 0, 1, 1]]))
+    assert inst.is_feasible(np.array([[0, 0, 0, 1, 0]]))       # closed overnight is fine
+    assert not inst.is_feasible(np.array([[0, 0, 0, 0, 0]]))   # 2 available OFF hours > 1
+
+
 def test_outage_history_carries_over():
     inst = _inst(np.ones((1, 4)), [9] * 4, max_off=[2], hist=[2])
     assert not inst.is_feasible(np.array([[0, 1, 1, 1]]))   # 2 earlier + 1 = 3 > 2
@@ -103,7 +109,14 @@ def random_instances(draw):
     x0 = [draw(st.integers(0, 1)) for _ in range(N)] if draw(st.booleans()) else None
     hist = [draw(st.integers(0, 1)) for _ in range(N)] if draw(st.booleans()) else None
     smax = [draw(st.integers(0, T)) for _ in range(N)] if draw(st.booleans()) else None
-    inst = _inst(D, P, max_off=max_off, min_on=min_on, crit=crit, K=K, tr=tr, x0=x0, hist=hist, smax=smax)
+    avail = np.array(draw(st.lists(st.sampled_from([1, 1, 1, 0]), min_size=N * T, max_size=N * T))).reshape(N, T)
+    avail[0] = 1 if crit[0] else avail[0]
+    D = D * avail                                       # no demand while unavailable
+    inst = _inst(D, P, max_off=max_off, min_on=min_on, crit=crit, K=K, tr=tr, x0=x0, hist=hist, smax=smax, avail=avail)
+    for i, f in enumerate(inst.feeders):
+        f["min_on"] = min(f["min_on"], int(avail[i].sum()))
+        if draw(st.booleans()):
+            f["feeder_cap"] = float(draw(st.integers(1, 4)))
     for f in inst.feeders:
         f["c"] = float(draw(st.integers(1, 10))); f["sigma"] = float(draw(st.integers(0, 3)))
     if N >= 2:
@@ -130,3 +143,34 @@ def test_greedy_baselines_run_and_are_checked():
     for g in (greedy_priority, greedy_atc):
         r = g(inst)
         assert r["X"].shape == (3, 2) and r["feasible"] == inst.is_feasible(r["X"])
+
+
+# ---------------- strong exact solvers (CP-SAT, SCIP) agree with exhaustive search
+@settings(max_examples=40, deadline=None, suppress_health_check=[HealthCheck.too_slow])
+@given(inst=random_instances())
+def test_cpsat_and_scip_equal_exhaustive(inst):
+    from gridq.exact import cpsat_solve, scip_solve
+    ex = exhaustive_solve(inst)
+    cp = cpsat_solve(inst, time_limit=20, workers=4)
+    sc = scip_solve(inst, time_limit=20)
+    if ex["X"] is None:
+        assert cp["X"] is None and sc["X"] is None
+    else:
+        assert inst.is_feasible(cp["X"]) and inst.is_feasible(sc["X"])
+        # CP-SAT optimises integer-rounded weights (rel. error < 1/(2*COEF_RES)); allow that tolerance
+        assert cp["J"] == pytest.approx(ex["J"], rel=1e-3, abs=1e-6)
+        assert sc["J"] == pytest.approx(ex["J"], rel=1e-6, abs=1e-6)
+
+
+def test_cityx_exact_solvers_agree_and_beat_current_practice():
+    from gridq.exact import cpsat_solve, scip_solve
+    from gridq.instances import pakistan_instance
+    inst = pakistan_instance("severe")
+    assert not inst.validate()
+    cp = cpsat_solve(inst, time_limit=60, workers=8)
+    sc = scip_solve(inst, time_limit=60)
+    assert cp["status"] == "OPTIMAL" and inst.is_feasible(cp["X"])
+    assert sc["J"] == pytest.approx(cp["J"], rel=1e-4)
+    atc = greedy_atc(inst)
+    assert atc["J"] == pytest.approx(3.0)           # scales are taken from current practice
+    assert cp["J"] < 0.6 * atc["J"]

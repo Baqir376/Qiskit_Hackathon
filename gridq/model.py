@@ -10,7 +10,11 @@ Notation follows the specification:
     f3 = sum_i sigma_i sum_t |x_it - x_i,t-1|  switching (t=1 uses x0 if given)
     J  = l1 f1/S1 + l2 f2/S2 + l3 f3/S3
 Hard constraints: supply, availability, critical protection, min ON hours, max consecutive OFF
-(with outage history), transformer capacity, optional max switches.
+(with outage history), transformer capacity, feeder thermal limit, optional max switches.
+
+Modelling correction vs the spec: an hour in which a feeder is unavailable (a_it = 0, no demand, e.g. a
+factory closed at night) is NOT an outage. "Max consecutive OFF" therefore counts consecutive OFF hours
+within contiguous runs of available hours; an unavailable hour ends the run.
 Arrays X may carry leading batch dimensions: shape (..., N, T).
 """
 from __future__ import annotations
@@ -38,6 +42,7 @@ class Instance:
     x0: np.ndarray | None = None         # (N,) state before hour 1 (for switching at t=1)
     off_history: np.ndarray | None = None  # (N,) consecutive OFF hours already accumulated before hour 1
     smax: np.ndarray | None = None       # (N,) optional max switches (MILP/feasibility only)
+    eta: float = 0.0                     # historical-fairness weight: c_eff = c_i + eta * H_i (H_i = past outage hours)
     dt: float = 1.0
     meta: dict = field(default_factory=dict)
 
@@ -60,7 +65,10 @@ class Instance:
 
     @property
     def c(self) -> np.ndarray:
-        return np.array([f["c"] for f in self.feeders], float)
+        """Effective interruption weight c_i + eta * H_i (historical fairness; eta = 0 -> plain c_i)."""
+        base = np.array([f["c"] for f in self.feeders], float)
+        hist = np.array([float(f.get("hist_outage_h", 0.0)) for f in self.feeders])
+        return base + self.eta * hist
 
     @property
     def sigma(self) -> np.ndarray:
@@ -90,9 +98,36 @@ class Instance:
         """(N,T) array: 1 = fixed ON (critical & available), 0 = fixed OFF (unavailable), -1 = free."""
         fx = -np.ones((self.N, self.T), int)
         fx[self.avail == 0] = 0
+        kf = np.array([float(f.get("feeder_cap", np.inf) or np.inf) for f in self.feeders])
+        fx[(self.D > kf[:, None] + 1e-9) & ~self.critical[:, None]] = 0     # feeder thermal limit D_it x_it <= K_i
         crit = self.critical[:, None] & (self.avail == 1)
         fx[crit] = 1
         return fx
+
+    def outage_windows(self, i: int) -> list[list[int]]:
+        """Index windows of L_i+1 consecutive AVAILABLE hours that must each contain >= 1 ON hour.
+        Outage history (off_history) shortens the first window of a run that starts at hour 1."""
+        L = int(self.max_off[i])
+        h = 0 if self.off_history is None else int(self.off_history[i])
+        out, t = [], 0
+        while t < self.T:
+            if self.avail[i, t] == 0:
+                t += 1
+                continue
+            s = t
+            while t < self.T and self.avail[i, t] == 1:
+                t += 1
+            run = list(range(s, t))                  # contiguous available hours
+            hh = h if s == 0 else 0
+            if hh > 0:
+                end = L + 1 - hh
+                if end <= 0:
+                    out.append([])                    # history alone already exceeds L -> infeasible
+                elif len(run) >= end:
+                    out.append(run[:end])             # only binding if the run is long enough
+            for k in range(0, len(run) - L):
+                out.append(run[k:k + L + 1])
+        return out
 
     def validate(self) -> list[str]:
         """Data validation (spec §18.4). Returns a list of problems; empty means OK."""
@@ -106,6 +141,9 @@ class Instance:
         crit_load = (self.D * (self.critical[:, None] & (self.avail == 1))).sum(axis=0)
         for t in np.flatnonzero(crit_load > self.Pmax + 1e-9):
             errs.append(f"critical demand {crit_load[t]:.2f} MW exceeds usable supply {self.Pmax[t]:.2f} MW at hour {t + 1} (infeasible)")
+        kf = np.array([float(f.get("feeder_cap", np.inf) or np.inf) for f in self.feeders])
+        for i, t in zip(*np.nonzero(self.critical[:, None] & (self.avail == 1) & (self.D > kf[:, None] + 1e-9))):
+            errs.append(f"critical feeder {self.feeders[i]['id']} demand exceeds its thermal limit at hour {t + 1} (infeasible)")
         for j, mem in self.transformer_members().items():
             if j not in self.K:
                 errs.append(f"transformer {j} has no capacity")
@@ -171,12 +209,18 @@ class Instance:
             v["min_on"].append((int(i), int(X[i].sum()), int(self.min_on[i])))
         hist = np.zeros(self.N, int) if self.off_history is None else self.off_history
         for i in range(self.N):
-            run, worst = int(hist[i]), 0
+            run, worst = int(hist[i]), int(hist[i]) if self.avail[i, 0] == 1 else 0
             for t in range(self.T):
+                if self.avail[i, t] == 0:
+                    run = 0                       # no demand -> not an outage, run ends
+                    continue
                 run = run + 1 if X[i, t] == 0 else 0
                 worst = max(worst, run)
             if worst > self.max_off[i]:
                 v["max_off"].append((int(i), worst, int(self.max_off[i])))
+        kf = np.array([float(f.get("feeder_cap", np.inf) or np.inf) for f in self.feeders])
+        for i, t in zip(*np.nonzero((X == 1) & (self.D > kf[:, None] + tol))):
+            v.setdefault("feeder_cap", []).append((int(i), int(t)))
         for j, mem in self.transformer_members().items():
             tl = (self.D[mem] * X[mem]).sum(axis=0)
             for t in np.flatnonzero(tl > self.K[j] + tol):
@@ -199,16 +243,19 @@ class Instance:
         ok &= ~((X == 0) & (self.critical[:, None] & (self.avail == 1))).any(axis=(1, 2))
         ok &= (X.sum(axis=2) >= self.min_on).all(axis=1)
         hist = np.zeros(self.N, int) if self.off_history is None else self.off_history
-        run = np.broadcast_to(hist, (X.shape[0], self.N)).copy()
+        run = np.broadcast_to(np.where(self.avail[:, 0] == 1, hist, 0), (X.shape[0], self.N)).copy()
         worst = run.copy()
         for t in range(self.T):
-            run = np.where(X[:, :, t] == 0, run + 1, 0)
+            av = self.avail[:, t] == 1
+            run = np.where(av[None, :], np.where(X[:, :, t] == 0, run + 1, 0), 0)
             worst = np.maximum(worst, run)
         ok &= (worst <= self.max_off).all(axis=1)
         for j, mem in self.transformer_members().items():
             ok &= ((self.D[mem] * X[:, mem]).sum(axis=1) <= self.K[j] + 1e-9).all(axis=1)
         if self.smax is not None:
             ok &= (self.switches(X) <= self.smax).all(axis=1)
+        kf = np.array([float(f.get("feeder_cap", np.inf) or np.inf) for f in self.feeders])
+        ok &= ~((X == 1) & (self.D > kf[:, None] + 1e-9)).any(axis=(1, 2))
         return ok
 
 
@@ -225,7 +272,8 @@ def load_instance(folder: str | Path) -> Instance:
                             critical=r["critical"].strip().lower() in ("1", "true", "yes"),
                             c=float(r["impact_weight"]), min_on=int(r["min_on_hours"]),
                             max_off=int(r["max_consecutive_off"]), sigma=float(r["switching_cost"]),
-                            transformer=r["transformer_id"], atc_loss_pct=float(r.get("atc_loss_pct", 0) or 0)))
+                            transformer=r["transformer_id"], atc_loss_pct=float(r.get("atc_loss_pct", 0) or 0),
+                            feeder_cap=float(r.get("feeder_capacity_mw") or "inf"), hist_outage_h=float(r.get("hist_outage_h", 0) or 0)))
     idx = {f["id"]: k for k, f in enumerate(feeders)}
     dem = rd("demand_profiles.csv")
     T = max(int(r["hour"]) for r in dem)

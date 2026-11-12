@@ -1,14 +1,22 @@
 {
-  "name": "Pakistan summer load-shedding (synthetic)",
+  "name": "City X, Pakistan summer load-shedding (synthetic)",
   "lambdas": [
     1.0,
     1.0,
     1.0
   ],
   "scales": "from_atc_baseline",
+  "scenarios_mw": {
+    "normal": 100,
+    "reduced": 85,
+    "severe": 70,
+    "emergency": 55
+  },
+  "default_scenario": "severe",
+  "reserve_mw": 2,
   "meta": {
-    "data_note": "SYNTHETIC DATA. Feeder types, demand shapes and the summer supply shortfall are modelled on the public description of Pakistani DISCO operations (feeder-level load management by AT&C-loss bands, evening-peak residential cooling load, grid-station allocation below demand). No real utility data are used; numbers are illustrative and must not be read as measurements of any real feeder.",
-    "units": "MW quantised to 0.5 MW",
+    "data_note": "Synthetic data on the team's City X design; Pakistan framing; not real utility data.",
+    "units": "integer MW",
     "horizon": "24 h, hourly"
   }
 }
