@@ -1,0 +1,51 @@
+{
+ "backend": "FakeTorino",
+ "shots": 4096,
+ "lam": 0.5,
+ "rows": [
+  {
+   "variant": "A",
+   "label": "QAOA (X-mixer, penalty)",
+   "depth": 513,
+   "two_qubit_gates": 370,
+   "ideal_p_opt": 0.0052714737733783506,
+   "noisy_p_opt": 0.001220703125,
+   "ideal_feasible": 0.1303470547640994,
+   "noisy_feasible": 0.033203125,
+   "uniform_p_opt": 0.000244140625
+  },
+  {
+   "variant": "B",
+   "label": "CVaR-QAOA (X-mixer, penalty)",
+   "depth": 509,
+   "two_qubit_gates": 370,
+   "ideal_p_opt": 0.015001313462268387,
+   "noisy_p_opt": 0.001953125,
+   "ideal_feasible": 0.3075594264482965,
+   "noisy_feasible": 0.07080078125,
+   "uniform_p_opt": 0.000244140625
+  },
+  {
+   "variant": "C",
+   "label": "XY-QAOA (constraint-preserving)",
+   "depth": 545,
+   "two_qubit_gates": 394,
+   "ideal_p_opt": 0.04591904058067054,
+   "noisy_p_opt": 0.0068359375,
+   "ideal_feasible": 0.985274484090584,
+   "noisy_feasible": 0.133544921875,
+   "uniform_p_opt": 0.000244140625
+  },
+  {
+   "variant": "D",
+   "label": "XY-CVaR-QAOA (constraint-preserving)",
+   "depth": 541,
+   "two_qubit_gates": 394,
+   "ideal_p_opt": 0.09134515995847978,
+   "noisy_p_opt": 0.011962890625,
+   "ideal_feasible": 0.8077907390733003,
+   "noisy_feasible": 0.125732421875,
+   "uniform_p_opt": 0.000244140625
+  }
+ ]
+}

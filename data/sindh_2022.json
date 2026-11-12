@@ -1,0 +1,25 @@
+{
+  "name": "Sindh 2022 flood relief dispatch (illustrative instance)",
+  "data_note": "Place names and approximate coordinates are real locations in Sindh that were severely affected by the 2022 Pakistan floods. Team types, affected-population figures, need profiles, access factors and corridor labels are SYNTHETIC, chosen to create a realistic trade-off. They are not official NDMA/PDMA figures and must not be used for real operations.",
+  "need_dimensions": ["water_rescue", "medical", "supplies"],
+  "road_factor": 1.3,
+  "base_speed_kmh": 40.0,
+  "congestion_hours": 1.5,
+  "teams": [
+    {"id": "BOAT", "name": "Boat rescue team", "base": "Sukkur", "lat": 27.70, "lon": 68.86, "capability": [1.0, 0.2, 0.3]},
+    {"id": "MED", "name": "Mobile medical camp", "base": "Hyderabad", "lat": 25.40, "lon": 68.37, "capability": [0.1, 1.0, 0.3]},
+    {"id": "SUP", "name": "Relief supply convoy", "base": "Larkana", "lat": 27.56, "lon": 68.21, "capability": [0.2, 0.2, 1.0]}
+  ],
+  "sites": [
+    {"id": "JOHI", "name": "Johi (Dadu district)", "lat": 26.69, "lon": 67.61, "people_k": 60, "needs": [0.9, 0.5, 0.6], "access_factor": 1.8},
+    {"id": "KNS", "name": "Khairpur Nathan Shah", "lat": 27.09, "lon": 67.73, "people_k": 50, "needs": [0.8, 0.6, 0.5], "access_factor": 1.6},
+    {"id": "DADU", "name": "Dadu city", "lat": 26.73, "lon": 67.78, "people_k": 80, "needs": [0.4, 0.8, 0.7], "access_factor": 1.2},
+    {"id": "JCD", "name": "Jacobabad", "lat": 28.28, "lon": 68.44, "people_k": 45, "needs": [0.3, 0.7, 0.9], "access_factor": 1.1}
+  ],
+  "corridors": {
+    "_comment": "Road corridor used by route team->site. Two teams on the same corridor incur congestion_hours each (shared, partly washed-out roads).",
+    "BOAT": {"JOHI": "N55-north", "KNS": "N55-north", "DADU": "N55-north", "JCD": "N65"},
+    "MED":  {"JOHI": "N55-south", "KNS": "N55-south", "DADU": "N55-south", "JCD": "N65"},
+    "SUP":  {"JOHI": "N55-north", "KNS": "N55-north", "DADU": "N55-north", "JCD": "N65"}
+  }
+}
