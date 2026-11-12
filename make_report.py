@@ -70,6 +70,7 @@ doc.add_heading("FloodQAOA: Quantum Multi-Objective Dispatch of Flood-Relief Tea
 para("Qiskit Fall Fest 2026 Hackathon — Domain 2: Disaster Response")
 para("Baqir Raza, M. Ali Reza, Balaaj Raza", bold_prefix="Team: ")
 para(f"Code: {REPO}")
+para("Live demo: https://baqir376.github.io/Qiskit_Hackathon/  ·  Quantum Workspace: https://baqir376.github.io/Qiskit_Hackathon/app/  ·  Notebook: demo.ipynb")
 
 h("1. Problem and who it serves")
 para("In the 2022 Pakistan floods, about one third of the country was under water and Sindh's Dadu district "
@@ -117,6 +118,7 @@ para("The XY mixer exp(−iβ(XX+YY)/2) on neighbouring qubits of a team registe
      "(best sample). Parameters are transferred between neighbouring λ values (warm start), in the spirit "
      "of Kotil et al. (2025), with a linear-ramp and random restarts. The classical optimiser is COBYLA.")
 fig("architecture.png", "Figure 1 — System architecture (hybrid quantum-classical loop).")
+fig("circuit_xy_p1.png", "Figure 1b — The 12-qubit XY-QAOA circuit (p = 1): W-state preparation per team, cost layer (RZ = linear impact/travel terms, RZZ = capacity and shared-corridor couplings), and the Hamming-weight-preserving RXX+RYY ring mixer.")
 
 h("4. Implementation and validation")
 para("Qiskit 2.x circuits are built explicitly (RZ/RZZ cost layer, RX or RXX+RYY mixer), simulated "
@@ -173,6 +175,17 @@ if NZ:
     fig("noise.png", f"Figure 7 — Trained circuits re-run on an Aer noise model of IBM {NZ['backend']} (simulated, not real hardware).")
 fig("convergence.png", "Figure 8 — COBYLA convergence at λ = 0.5.", 4.8)
 
+h("5.2 Testing and validation of the software", 2)
+para("Beyond the exact baseline, the code base has a multi-layer test suite that runs in CI on every push (docs/TESTING.md): "
+     "58 pytest tests (unit, Hypothesis property-based tests on randomly generated scenarios, cross-checks against qiskit-optimization's "
+     "own converter, regression tests that pin every headline number, and an exact reproducibility re-run of the pipeline), "
+     "11 Vitest tests (including a cross-implementation check that the browser simulator reproduces Qiskit's probabilities for all 44 trained runs, max |Δp| = 5e-6), "
+     "and 10 Playwright end-to-end tests with axe-core WCAG accessibility scans, a performance budget and mobile checks. "
+     "The tests found and fixed one real edge-case bug (CVaR with α = 1) and a precision drift in the web export.")
+h("5.3 Interactive demonstration", 2)
+para("A public website presents the problem and results, and its Quantum Workspace lets anyone choose a priority and an algorithm and "
+     "run the 12-qubit QAOA live in the browser (a TypeScript port of the exact Qiskit circuit, verified against Qiskit), with a 3D view of the "
+     "quantum state and the resulting dispatch plan checked against brute force. demo.ipynb reproduces one instance in Qiskit in about a minute.")
 h("6. Limitations and honest reflection")
 for b in [
     "No quantum advantage, and none is claimed. With 12 qubits, brute force over 4096 states takes milliseconds; "
@@ -221,6 +234,16 @@ for b in ["python -m venv .venv && .venv\\Scripts\\activate  (or source .venv/bi
           f"All seeds fixed (seed={M['seed']}); full pipeline runtime ≈ {M.get('total_seconds', 0)/60:.0f} min on a laptop CPU."]:
     bullet(b)
 
+h("8. Alignment with the challenge brief")
+table(["Requirement", "Where it is addressed"], [
+ ["01 Identify: problem & users", "§1: flood-relief dispatch for district/provincial disaster-management cells, Sindh 2022"],
+ ["02 Formulate: variables, objective, constraints, instance", "§2: 12 binary variables, two objectives, 2 constraint families, 3×4 instance"],
+ ["03 Justify: algorithm & representation", "§3, Fig. 1b: QAOA/QAOA-ansatz, Ising mapping, XY mixer, CVaR"],
+ ["04 Implement in Qiskit", "floodqaoa/ (Qiskit 2.6, qiskit-optimization, Aer, FakeTorino); demo.ipynb"],
+ ["05 Evaluate vs exact reference", "§5: brute force over 4,096 states, exact Pareto front, hypervolume, greedy baseline"],
+ ["06 Reflect: correctness, feasibility, trade-offs", "§5.1 depth/penalty/noise studies, §6 limitations"],
+ ["Deliverables: repo, report, architecture diagram, 3-min video", "GitHub repo · this report · Fig. 1 · video link in the submission form"],
+])
 h("References")
 for r in ["E. Farhi, J. Goldstone, S. Gutmann, A Quantum Approximate Optimization Algorithm, arXiv:1411.4028 (2014).",
           "S. Hadfield et al., From the QAOA to a Quantum Alternating Operator Ansatz, Algorithms 12, 34 (2019).",
@@ -231,5 +254,5 @@ for r in ["E. Farhi, J. Goldstone, S. Gutmann, A Quantum Approximate Optimizatio
     bullet(r)
 
 Path("report").mkdir(exist_ok=True)
-doc.save("report/FloodQAOA_Report.docx")
-print("report/FloodQAOA_Report.docx written")
+doc.save("report/FloodQAOA_Final_Report.docx")
+print("report/FloodQAOA_Final_Report.docx written")

@@ -21,7 +21,7 @@ export default function FlowField({ className = "", density = 0.00055 }: { class
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       const n = Math.floor(w * h * density);
       ps = Array.from({ length: n }, () => ({ x: Math.random() * w, y: Math.random() * h, life: Math.random() * 200, hue: Math.random() }));
-      ctx.fillStyle = "#04070d"; ctx.fillRect(0, 0, w, h);
+      ctx.fillStyle = "#0C0F1E"; ctx.fillRect(0, 0, w, h);
     };
     const field = (x: number, y: number) => {
       const s = 0.0016;
@@ -30,14 +30,14 @@ export default function FlowField({ className = "", density = 0.00055 }: { class
     };
     const step = () => {
       t += 0.016;
-      ctx.fillStyle = "rgba(4,7,13,0.085)";
+      ctx.fillStyle = "rgba(12,15,30,0.085)";
       ctx.fillRect(0, 0, w, h);
       for (const p of ps) {
         const a = field(p.x, p.y);
         let nx = p.x + Math.cos(a) * 1.25, ny = p.y + Math.sin(a) * 1.25;
         const dx = p.x - mx, dy = p.y - my, d2 = dx * dx + dy * dy;
         if (d2 < 16000) { const k = (1 - d2 / 16000) * 3.2 / Math.sqrt(d2 + 1); nx += dx * k; ny += dy * k; }
-        ctx.strokeStyle = p.hue < 0.82 ? `rgba(34,211,238,${0.22 + p.hue * 0.25})` : `rgba(167,139,250,0.45)`;
+        ctx.strokeStyle = p.hue < 0.55 ? `rgba(243,236,221,${0.12 + p.hue * 0.25})` : p.hue < 0.85 ? `rgba(111,195,178,0.42)` : `rgba(232,176,75,0.5)`;
         ctx.lineWidth = 1;
         ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(nx, ny); ctx.stroke();
         p.x = nx; p.y = ny; p.life -= 1;

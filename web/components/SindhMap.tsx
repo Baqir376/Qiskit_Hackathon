@@ -9,7 +9,7 @@ const INDUS: [number, number][] = [
   [68.03, 27.05], [67.97, 26.8], [67.93, 26.55], [67.95, 26.3], [68.12, 25.95], [68.28, 25.6], [68.33, 25.3], [68.25, 25.1],
 ];
 const TEAM_ICON: Record<string, string> = { BOAT: "⛵", MED: "✚", SUP: "▣" };
-const TEAM_COL: Record<string, string> = { BOAT: "#22d3ee", MED: "#fb7185", SUP: "#fbbf24" };
+const TEAM_COL: Record<string, string> = { BOAT: "#6FC3B2", MED: "#E0533D", SUP: "#E8B04B" };
 
 function curve(a: readonly [number, number], b: readonly [number, number]) {
   const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2;
@@ -30,12 +30,12 @@ export default function SindhMap({ plan, pulse = true, neutral = false }: { plan
     <svg viewBox={`0 0 ${W} ${H}`} className="h-full w-full" role="img" aria-label="Map of the Sindh scenario with team routes">
       <defs>
         <radialGradient id="flood" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.35" />
-          <stop offset="100%" stopColor="#22d3ee" stopOpacity="0" />
+          <stop offset="0%" stopColor="#6FC3B2" stopOpacity="0.35" />
+          <stop offset="100%" stopColor="#6FC3B2" stopOpacity="0" />
         </radialGradient>
         <linearGradient id="river" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#38bdf8" />
-          <stop offset="100%" stopColor="#0ea5e9" />
+          <stop offset="0%" stopColor="#6FC3B2" />
+          <stop offset="100%" stopColor="#4E9F95" />
         </linearGradient>
         <filter id="glow"><feGaussianBlur stdDeviation="3" result="b" /><feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
       </defs>
@@ -43,11 +43,11 @@ export default function SindhMap({ plan, pulse = true, neutral = false }: { plan
       {/* graticule */}
       {[67, 67.5, 68, 68.5, 69].map((lo) => {
         const [x] = P(lo, 26);
-        return <line key={lo} x1={x} x2={x} y1={0} y2={H} stroke="rgba(148,163,184,0.07)" />;
+        return <line key={lo} x1={x} x2={x} y1={0} y2={H} stroke="rgba(243,236,221,0.07)" />;
       })}
       {[25.5, 26, 26.5, 27, 27.5, 28].map((la) => {
         const [, y] = P(67, la);
-        return <g key={la}><line x1={0} x2={W} y1={y} y2={y} stroke="rgba(148,163,184,0.07)" /><text x={6} y={y - 4} fontSize={9} fill="rgba(139,154,176,0.6)" fontFamily="monospace">{la}°N</text></g>;
+        return <g key={la}><line x1={0} x2={W} y1={y} y2={y} stroke="rgba(243,236,221,0.07)" /><text x={6} y={y - 4} fontSize={9} fill="rgba(139,154,176,0.6)" fontFamily="monospace">{la}°N</text></g>;
       })}
 
       {/* illustrative flood extent around Manchar / Dadu */}
@@ -62,10 +62,10 @@ export default function SindhMap({ plan, pulse = true, neutral = false }: { plan
       {/* Indus */}
       <motion.path d={river} fill="none" stroke="url(#river)" strokeWidth={3.5} strokeLinecap="round" opacity={0.75}
         initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 2.4, ease: "easeInOut" }} />
-      <path d={river} fill="none" stroke="#7dd3fc" strokeWidth={1.2} strokeDasharray="2 10" opacity={0.8}>
+      <path d={river} fill="none" stroke="#A8DDD3" strokeWidth={1.2} strokeDasharray="2 10" opacity={0.8}>
         <animate attributeName="stroke-dashoffset" from="0" to="-48" dur="1.6s" repeatCount="indefinite" />
       </path>
-      <text {...(() => { const [x, y] = P(68.06, 26.95); return { x: x + 8, y }; })()} fontSize={10} fill="#7dd3fc" fontStyle="italic" opacity={0.8}>Indus (schematic)</text>
+      <text {...(() => { const [x, y] = P(68.06, 26.95); return { x: x + 8, y }; })()} fontSize={10} fill="#A8DDD3" fontStyle="italic" opacity={0.8}>Indus (schematic)</text>
 
       {/* routes */}
       <AnimatePresence>
@@ -96,13 +96,13 @@ export default function SindhMap({ plan, pulse = true, neutral = false }: { plan
         return (
           <g key={s.id}>
             {!isServed && (
-              <motion.circle cx={x} cy={y} r={r} initial={{ r }} fill="none" stroke="#fb7185" strokeWidth={2}
+              <motion.circle cx={x} cy={y} r={r} initial={{ r }} fill="none" stroke="#E0533D" strokeWidth={2}
                 animate={{ r: [r, r + 22], opacity: [0.9, 0] }} transition={{ duration: 1.4, repeat: Infinity }} />
             )}
-            <motion.circle cx={x} cy={y} r={r} initial={{ r }} animate={{ r, fill: neutral ? "#22d3ee" : isServed ? "#34d399" : "#fb7185" }} fillOpacity={0.3}
-              stroke={neutral ? "#22d3ee" : isServed ? "#34d399" : "#fb7185"} strokeWidth={1.5} transition={{ duration: 0.5 }} />
-            <text x={left ? x - r - 6 : x + r + 6} y={y - 2} textAnchor={left ? "end" : "start"} fontSize={12} fill="#e6edf6" fontWeight={600}>{s.name.replace(" (Dadu district)", "")}</text>
-            <text x={left ? x - r - 6 : x + r + 6} y={y + 12} textAnchor={left ? "end" : "start"} fontSize={10} fill={neutral ? "#8b9ab0" : isServed ? "#34d399" : "#fb7185"} fontFamily="monospace">
+            <motion.circle cx={x} cy={y} r={r} initial={{ r }} animate={{ r, fill: neutral ? "#6FC3B2" : isServed ? "#9CCB7A" : "#E0533D" }} fillOpacity={0.3}
+              stroke={neutral ? "#6FC3B2" : isServed ? "#9CCB7A" : "#E0533D"} strokeWidth={1.5} transition={{ duration: 0.5 }} />
+            <text x={left ? x - r - 6 : x + r + 6} y={y - 2} textAnchor={left ? "end" : "start"} fontSize={12} fill="#F3ECDD" fontWeight={600}>{s.name.replace(" (Dadu district)", "")}</text>
+            <text x={left ? x - r - 6 : x + r + 6} y={y + 12} textAnchor={left ? "end" : "start"} fontSize={10} fill={neutral ? "#A9A291" : isServed ? "#9CCB7A" : "#E0533D"} fontFamily="monospace">
               {s.people_k}k* · {neutral ? "awaiting plan" : isServed ? "served" : "WAITS"}
             </text>
           </g>
@@ -114,7 +114,7 @@ export default function SindhMap({ plan, pulse = true, neutral = false }: { plan
         const [x, y] = P(t.lon, t.lat);
         return (
           <g key={t.id}>
-            <rect x={x - 13} y={y - 13} width={26} height={26} rx={8} fill="#0a111d" stroke={TEAM_COL[t.id]} strokeWidth={1.5} />
+            <rect x={x - 13} y={y - 13} width={26} height={26} rx={8} fill="#141936" stroke={TEAM_COL[t.id]} strokeWidth={1.5} />
             <text x={x} y={y + 5} fontSize={14} textAnchor="middle" fill={TEAM_COL[t.id]}>{TEAM_ICON[t.id]}</text>
             <text x={x + 18} y={y + 4} fontSize={10} fill={TEAM_COL[t.id]} fontFamily="monospace">{t.base}</text>
           </g>

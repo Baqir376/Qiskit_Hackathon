@@ -57,7 +57,7 @@ function StepText({ i, s, active, onActive }: { i: number; s: (typeof STEPS)[num
   const inView = useInView(ref, { margin: "-45% 0px -45% 0px" });
   useEffect(() => { if (inView) onActive(i); }, [inView, i, onActive]);
   return (
-    <motion.div ref={ref} animate={{ opacity: active ? 1 : 0.3 }} transition={{ duration: 0.4 }} className="flex min-h-[48vh] flex-col justify-center py-8 lg:min-h-[70vh]">
+    <motion.div ref={ref} animate={{ opacity: active ? 1 : 0.78, scale: active ? 1 : 0.98 }} transition={{ duration: 0.4 }} className="flex min-h-[48vh] flex-col justify-center py-8 lg:min-h-[70vh]">
       <div className="font-mono text-xs tracking-[0.25em] text-flood">0{i + 1} · {s.tag}</div>
       <h3 className="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">{s.title}</h3>
       <p className="mt-4 max-w-md text-lg leading-relaxed text-muted">{s.body}</p>
@@ -91,7 +91,7 @@ function QubitGrid({ step }: { step: number }) {
     <div className="glass beam-border rounded-3xl p-4">
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
         {d.sites.map((s, si) => (
-          <text key={s.id} x={cx(si)} y={Y0 - 16} textAnchor="middle" fontSize={11} fill="#8b9ab0" fontFamily="monospace">{s.id}</text>
+          <text key={s.id} x={cx(si)} y={Y0 - 16} textAnchor="middle" fontSize={11} fill="#A9A291" fontFamily="monospace">{s.id}</text>
         ))}
         {d.teams.map((t, ti) => (
           <text key={t.id} x={X0 - 14} y={cy(ti) + 5} textAnchor="end" fontSize={13} fill={TEAM_COL[t.id]}>{TEAM_ICON[t.id]} {t.id}</text>
@@ -100,11 +100,11 @@ function QubitGrid({ step }: { step: number }) {
         {/* constraint bands */}
         {step === 1 && [0, 1, 2].map((t) => (
           <motion.rect key={`r${t}`} x={X0 - 6} y={cy(t) - CELL / 2 - 6} width={4 * (CELL + GAP) - GAP + 12} height={CELL + 12} rx={18}
-            fill="none" stroke="#22d3ee" strokeDasharray="6 6" initial={{ opacity: 0 }} animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 2, repeat: Infinity, delay: t * 0.3 }} />
+            fill="none" stroke="#6FC3B2" strokeDasharray="6 6" initial={{ opacity: 0 }} animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 2, repeat: Infinity, delay: t * 0.3 }} />
         ))}
         {step === 1 && [0, 1, 2, 3].map((s) => (
           <motion.rect key={`c${s}`} x={cx(s) - CELL / 2 - 4} y={Y0 - 4} width={CELL + 8} height={3 * (CELL + GAP) - GAP + 8} rx={16}
-            fill="rgba(251,191,36,0.05)" stroke="#fbbf24" strokeOpacity={0.5} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 + s * 0.1 }} />
+            fill="rgba(251,191,36,0.05)" stroke="#E8B04B" strokeOpacity={0.5} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 + s * 0.1 }} />
         ))}
 
         {/* qubits */}
@@ -113,18 +113,18 @@ function QubitGrid({ step }: { step: number }) {
           return (
             <g key={`${t}-${s}`}>
               <motion.rect x={cx(s) - CELL / 2} y={cy(t) - CELL / 2} width={CELL} height={CELL} rx={18}
-                fill="#0e1726" stroke="rgba(148,163,184,0.18)"
+                fill="#1B2147" stroke="rgba(243,236,221,0.18)"
                 initial={{ opacity: 0, scale: 0.6 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}
                 transition={{ delay: (t * 4 + s) * 0.04, type: "spring", stiffness: 220, damping: 18 }} style={{ transformOrigin: `${cx(s)}px ${cy(t)}px` }} />
               <motion.circle cx={cx(s)} cy={cy(t)}
                 animate={{
                   r: lit ? 22 : 14,
-                  fill: step === 3 ? (lit ? "#34d399" : "#1e293b") : "#22d3ee",
+                  fill: step === 3 ? (lit ? "#9CCB7A" : "#2A2F55") : "#6FC3B2",
                   opacity: step === 3 ? 1 : step === 0 ? [0.4, 1, 0.4] : 0.55,
                 }}
                 transition={step === 0 ? { duration: 1.4 + ((t + s) % 3) * 0.3, repeat: Infinity } : { type: "spring", stiffness: 260, damping: 20 }}
-                style={{ filter: lit && step === 3 ? "drop-shadow(0 0 12px #34d399)" : "none" }} />
-              <text x={cx(s)} y={cy(t) + CELL / 2 - 8} textAnchor="middle" fontSize={9} fill="#8b9ab0" fontFamily="monospace">q{t * 4 + s}</text>
+                style={{ filter: lit && step === 3 ? "drop-shadow(0 0 12px #9CCB7A)" : "none" }} />
+              <text x={cx(s)} y={cy(t) + CELL / 2 - 8} textAnchor="middle" fontSize={9} fill="#A9A291" fontFamily="monospace">q{t * 4 + s}</text>
             </g>
           );
         }))}
@@ -132,11 +132,11 @@ function QubitGrid({ step }: { step: number }) {
         {/* ZZ couplings */}
         {step === 2 && pairs.map(([t1, s1, t2, s2], k) => (
           <motion.path key={k} d={`M${cx(s1)},${cy(t1)} Q${(cx(s1) + cx(s2)) / 2 + 40},${(cy(t1) + cy(t2)) / 2} ${cx(s2)},${cy(t2)}`}
-            fill="none" stroke="#a78bfa" strokeWidth={1.3} strokeOpacity={0.75}
+            fill="none" stroke="#8F9CFF" strokeWidth={1.3} strokeOpacity={0.75}
             initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8, delay: k * 0.04 }} />
         ))}
 
-        <text x={W / 2} y={H - 18} textAnchor="middle" fontSize={13} fill="#e6edf6" fontFamily="monospace">
+        <text x={W / 2} y={H - 18} textAnchor="middle" fontSize={13} fill="#F3ECDD" fontFamily="monospace">
           {["|ψ⟩ = Σ over 4,096 plans", "H = F_λ(x) + P·Σ(Σx−1)² + P·Σ xx′", "H ∋ J·Z_a Z_b  (shared corridor)", "U_mix = Π exp(−iβ(XX+YY)/2) · W-state"][step]}
         </text>
       </svg>

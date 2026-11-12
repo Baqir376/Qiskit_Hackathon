@@ -30,7 +30,7 @@ export default function Nav({ show }: { show: boolean }) {
         transition={{ delay: 1.2, type: "spring", stiffness: 200, damping: 24 }}
         className="fixed left-1/2 top-4 z-50 -translate-x-1/2"
       >
-        <div className="flex items-center gap-1 rounded-full border border-line bg-[#060a12]/90 px-2 py-1.5 backdrop-blur-xl shadow-[0_8px_40px_rgba(0,0,0,0.4)]">
+        <div className="flex items-center gap-1 rounded-full border border-line bg-[#0C0F1E]/90 px-2 py-1.5 backdrop-blur-xl shadow-[0_8px_40px_rgba(0,0,0,0.45)]">
           <a href="#top" className="mr-2 flex items-center gap-2 pl-2 text-sm font-bold">
             <span className="relative flex h-5 w-5 items-center justify-center">
               <span className="absolute h-full w-full animate-ping rounded-full bg-flood/30" />

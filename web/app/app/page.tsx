@@ -10,9 +10,9 @@ export default function AppPage() {
   return (
     <MotionConfig reducedMotion="user">
       <Cursor />
-      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_at_top,rgba(34,211,238,0.08),transparent_50%),radial-gradient(ellipse_at_bottom_right,rgba(167,139,250,0.08),transparent_50%)]" />
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_at_top,rgba(232,176,75,0.08),transparent_50%),radial-gradient(ellipse_at_bottom_right,rgba(143,156,255,0.08),transparent_50%)]" />
       <motion.header initial={{ y: -60, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ type: "spring", stiffness: 200, damping: 24 }}
-        className="fixed inset-x-0 top-0 z-50 border-b border-line bg-[#060a12]/85 backdrop-blur-xl">
+        className="fixed inset-x-0 top-0 z-50 border-b border-line bg-[#0C0F1E]/85 backdrop-blur-xl">
         <div className="mx-auto flex max-w-[1400px] items-center gap-4 px-4 py-3 md:px-6">
           <a href={`${BASE_PATH}/`} className="flex items-center gap-2 text-sm font-bold" data-cursor="home">
             <span className="relative flex h-5 w-5 items-center justify-center"><span className="absolute h-full w-full animate-ping rounded-full bg-flood/30" /><span className="h-2.5 w-2.5 rounded-full bg-flood" /></span>

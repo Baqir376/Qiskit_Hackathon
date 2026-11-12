@@ -58,8 +58,8 @@ export default function Closing() {
               ))}
             </div>
             <svg className="pointer-events-none absolute inset-x-8 top-1/2 hidden h-8 -translate-y-1/2 md:block" preserveAspectRatio="none" viewBox="0 0 100 10" style={{ width: "calc(100% - 4rem)", zIndex: -1 }}>
-              <line x1="0" y1="5" x2="100" y2="5" stroke="rgba(148,163,184,0.2)" strokeWidth="0.3" />
-              <line x1="0" y1="5" x2="100" y2="5" stroke="#22d3ee" strokeWidth="0.6" strokeDasharray="6 94">
+              <line x1="0" y1="5" x2="100" y2="5" stroke="rgba(243,236,221,0.2)" strokeWidth="0.3" />
+              <line x1="0" y1="5" x2="100" y2="5" stroke="#6FC3B2" strokeWidth="0.6" strokeDasharray="6 94">
                 <animate attributeName="stroke-dashoffset" from="100" to="0" dur="2.5s" repeatCount="indefinite" />
               </line>
             </svg>
@@ -74,7 +74,7 @@ export default function Closing() {
       </section>
 
       <section className="relative overflow-hidden px-5 pb-16 pt-32 md:px-8">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(34,211,238,0.12),transparent_60%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(232,176,75,0.12),transparent_60%)]" />
         <div className="relative mx-auto max-w-4xl text-center">
           <Reveal>
             <h2 className="text-balance text-5xl font-semibold tracking-tight md:text-7xl">

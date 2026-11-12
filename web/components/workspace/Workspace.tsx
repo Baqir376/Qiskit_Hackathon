@@ -139,7 +139,7 @@ export default function Workspace() {
           const n = i + 1, active = n === step || (step === 1 && n === 2), doneStep = n < step;
           return (
             <div key={s} className="flex items-center gap-2">
-              <motion.div animate={{ backgroundColor: active ? "rgba(34,211,238,0.15)" : "rgba(255,255,255,0.03)", borderColor: active ? "rgba(34,211,238,0.5)" : "rgba(148,163,184,0.12)" }}
+              <motion.div animate={{ backgroundColor: active ? "rgba(232,176,75,0.15)" : "rgba(255,255,255,0.03)", borderColor: active ? "rgba(232,176,75,0.5)" : "rgba(243,236,221,0.12)" }}
                 className="flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs">
                 <span className={`flex h-5 w-5 items-center justify-center rounded-full font-mono text-[10px] ${doneStep ? "bg-win text-ink" : active ? "bg-flood text-ink" : "bg-white/10 text-muted"}`}>{doneStep ? "✓" : n}</span>
                 <span className={active || doneStep ? "text-text" : "text-muted"}>{s}</span>
@@ -227,7 +227,7 @@ export default function Workspace() {
           </div>
           <div className="grid grid-cols-3 gap-px border-t border-line bg-line">
             <Metric label="P(optimal plan)" value={pOptNow.toFixed(3)} color={color} />
-            <Metric label="P(valid plan)" value={`${((1 - invalid) * 100).toFixed(1)}%`} color="#34d399" />
+            <Metric label="P(valid plan)" value={`${((1 - invalid) * 100).toFixed(1)}%`} color="#9CCB7A" />
             <div className="bg-surface px-4 py-3">
               <div className="font-mono text-[9px] uppercase tracking-widest text-muted">objective ↓</div>
               <Spark data={hist} color={color} />
@@ -271,7 +271,7 @@ export default function Workspace() {
           </div>
         </div>
       </div>
-      <p className="mt-6 text-center text-[11px] text-muted/70">Real places in Sindh; population, need and access figures are synthetic. Not for operational use. <a className="underline" href={`${BASE_PATH}/`}>Back to overview</a></p>
+      <p className="mt-6 text-center text-[11px] text-muted">Real places in Sindh; population, need and access figures are synthetic. Not for operational use. <a className="underline" href={`${BASE_PATH}/`}>Back to overview</a></p>
     </div>
   );
 }
@@ -295,7 +295,7 @@ function Metric({ label, value, color }: { label: string; value: string; color: 
 }
 
 function Spark({ data, color }: { data: number[]; color: string }) {
-  if (data.length < 2) return <div className="h-8 font-mono text-[10px] text-muted/60">waiting…</div>;
+  if (data.length < 2) return <div className="h-8 font-mono text-[10px] text-muted">waiting…</div>;
   const lo = Math.min(...data), hi = Math.max(...data), W = 140, H = 32;
   const pts = data.map((y, i) => `${(i / (data.length - 1)) * W},${H - ((y - lo) / (hi - lo || 1)) * (H - 4) - 2}`).join(" ");
   return <svg viewBox={`0 0 ${W} ${H}`} className="h-8 w-full"><polyline points={pts} fill="none" stroke={color} strokeWidth={2} /></svg>;

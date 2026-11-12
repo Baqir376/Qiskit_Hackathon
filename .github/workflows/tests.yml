@@ -1,0 +1,48 @@
+name: Tests
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt hypothesis pytest-cov ruff pip-audit
+      - name: Lint (ruff)
+        run: ruff check floodqaoa tests app.py make_report.py --select E,F,W,B --ignore E501,E702,B008,B905,E731
+      - name: Unit + property + regression + integration tests (pytest)
+        run: pytest -q --cov=floodqaoa --cov-report=term
+      - name: Dependency security audit
+        run: pip-audit -r requirements.txt
+  web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - name: Static analysis (eslint + tsc)
+        run: npx eslint . && npx tsc --noEmit
+      - name: Unit tests incl. Qiskit cross-check (vitest)
+        run: npm test
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: E2E + accessibility + performance + responsive (Playwright + axe-core)
+        run: npx playwright test
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: web/playwright-report

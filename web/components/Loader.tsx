@@ -65,12 +65,12 @@ export default function Loader({ ready, onDone }: { ready: boolean; onDone: () =
                     <div key={s} className="relative flex h-12 w-12 items-center justify-center">
                       <motion.div
                         className="absolute h-10 w-10 rounded-full"
-                        style={{ background: "radial-gradient(circle at 35% 30%, #a5f3fc, #22d3ee 35%, #6d28d9 80%)" }}
+                        style={{ background: "radial-gradient(circle at 35% 30%, #F6D58E, #6FC3B2 35%, #2B3590 80%)" }}
                         initial={{ scale: 0, opacity: 0 }}
                         animate={
                           collapsed
                             ? on
-                              ? { scale: 1.15, opacity: 1, boxShadow: "0 0 40px 8px rgba(52,211,153,0.6)", background: "radial-gradient(circle at 35% 30%, #d1fae5, #34d399 45%, #065f46 90%)" }
+                              ? { scale: 1.15, opacity: 1, boxShadow: "0 0 40px 8px rgba(156,203,122,0.6)", background: "radial-gradient(circle at 35% 30%, #EAF4DE, #9CCB7A 45%, #3D5A2A 90%)" }
                               : { scale: 0.25, opacity: 0.15 }
                             : { scale: [0.55, 0.95, 0.55], opacity: [0.35, 1, 0.35] }
                         }
@@ -117,7 +117,7 @@ export default function Loader({ ready, onDone }: { ready: boolean; onDone: () =
               </motion.div>
             )}
           </AnimatePresence>
-          <div className="absolute bottom-8 font-mono text-[10px] tracking-widest text-muted/60">
+          <div className="absolute bottom-8 font-mono text-[10px] tracking-widest text-muted">
             {ready ? "CLICK TO SKIP" : "LOADING REAL QAOA DATA…"}
           </div>
         </motion.div>

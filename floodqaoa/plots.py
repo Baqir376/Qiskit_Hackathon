@@ -113,7 +113,6 @@ def convergence(R):
 def distribution(R, v="D"):
     probs = np.load(f"results/probs_{v}_lam0.5.npy")
     E = R["exact"]
-    pos = {k: j for j, k in enumerate(E["feasible_index"])}
     lam = 0.5
     f1, f2 = np.array(E["f1"]), np.array(E["f2"])
     F = -(1 - lam) * f1 / R["meta"]["f1max"] + lam * f2 / R["meta"]["f2max"]

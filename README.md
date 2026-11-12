@@ -59,6 +59,18 @@ There is no single correct plan, so FloodQAOA uses **QAOA in Qiskit** to compute
 ![Architecture](results/figures/architecture.png)
 
 
+## Quick demo (1 minute)
+
+Open **`demo.ipynb`**. It is executed with outputs, and GitHub renders it. It builds the Ising model, runs XY-CVaR-QAOA in
+Qiskit, and checks the result against brute force (P(optimal) = 0.091 vs 1/64 random, matching the exact optimum).
+
+## Testing
+
+58 pytest + 11 Vitest + 10 Playwright tests run in CI on every push. They cover unit, property-based (Hypothesis),
+cross-implementation (vs qiskit-optimization and vs Qiskit statevectors), regression, reproducibility, integration,
+E2E, accessibility (axe-core, WCAG AA), performance budget, responsive and security (pip-audit / npm audit).
+See **[docs/TESTING.md](docs/TESTING.md)**. Prepared answers to likely judge questions: **[docs/DEFENSE_QA.md](docs/DEFENSE_QA.md)**.
+
 ## Interactive website
 
 **Live:** https://baqir376.github.io/Qiskit_Hackathon/ · **App:** https://baqir376.github.io/Qiskit_Hackathon/app/
@@ -89,7 +101,7 @@ pytest                            # 26 correctness tests (Ising == objective, pe
 python -m floodqaoa.experiment    # all QAOA runs → results/results.json  (~10–15 min on a laptop CPU)
 python -m floodqaoa.noise_study   # re-run trained circuits on an IBM FakeTorino noise model
 python -m floodqaoa.plots         # figures → results/figures/
-python make_report.py             # report/FloodQAOA_Report.docx (numbers read from results.json)
+python make_report.py             # report/FloodQAOA_Final_Report.docx (numbers read from results.json)
 streamlit run app.py              # interactive dashboard (pre-computed + live QAOA)
 ```
 

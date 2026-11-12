@@ -43,7 +43,7 @@ export type FloodData = {
   noise: { backend: string; shots: number; rows: { variant: VariantKey; depth: number; two_qubit_gates: number; ideal_p_opt: number; noisy_p_opt: number; ideal_feasible: number; noisy_feasible: number; uniform_p_opt: number }[] };
 };
 
-export const VCOLOR: Record<VariantKey, string> = { A: "#94a3b8", B: "#fbbf24", C: "#38bdf8", D: "#34d399" };
+export const VCOLOR: Record<VariantKey, string> = { A: "#A9A291", B: "#E8B04B", C: "#6FC3B2", D: "#8F9CFF" };
 export const VSHORT: Record<VariantKey, string> = {
   A: "Standard QAOA",
   B: "CVaR-QAOA",

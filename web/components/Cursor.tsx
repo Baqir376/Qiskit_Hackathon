@@ -66,7 +66,7 @@ export default function Cursor() {
         <div key={b.id} className="pointer-events-none fixed z-[199]" style={{ left: b.x, top: b.y }}>
           {Array.from({ length: 12 }).map((_, i) => {
             const a = (i / 12) * Math.PI * 2;
-            const col = ["#22d3ee", "#a78bfa", "#34d399"][i % 3];
+            const col = ["#6FC3B2", "#8F9CFF", "#9CCB7A"][i % 3];
             return (
               <motion.span key={i} className="absolute h-1.5 w-1.5 rounded-full" style={{ background: col, boxShadow: `0 0 8px ${col}` }}
                 initial={{ x: 0, y: 0, opacity: 1, scale: 1 }} animate={{ x: Math.cos(a) * 46, y: Math.sin(a) * 46, opacity: 0, scale: 0.3 }}

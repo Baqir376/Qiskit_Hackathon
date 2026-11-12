@@ -1,6 +1,7 @@
 "use client";
 import { MotionConfig } from "motion/react";
 import { useCallback, useState } from "react";
+import AjrakBand from "@/components/AjrakBand";
 import AppTeaser from "@/components/AppTeaser";
 import Closing from "@/components/Closing";
 import Cursor from "@/components/Cursor";
@@ -28,10 +29,13 @@ export default function Landing() {
           <Nav show={intro} />
           <main>
             <Hero start={intro} />
+            <AjrakBand />
             <Dilemma />
             <Qubits />
+            <AjrakBand reverse />
             <AppTeaser />
             <Pareto />
+            <AjrakBand />
             <Results />
             <Closing />
           </main>

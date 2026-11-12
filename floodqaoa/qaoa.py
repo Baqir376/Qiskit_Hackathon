@@ -130,7 +130,7 @@ class QAOARunner:
         # CVaR_alpha: mean energy of the best alpha-fraction of the distribution
         p_sorted, e_sorted = probs[self._order], self.diag[self._order]
         cum = np.cumsum(p_sorted)
-        k = int(np.searchsorted(cum, self.alpha))
+        k = min(int(np.searchsorted(cum, self.alpha)), len(cum) - 1)  # guard: cum[-1] may be 1 - eps
         mass_before = cum[k - 1] if k > 0 else 0.0
         val = float(p_sorted[:k] @ e_sorted[:k]) + (self.alpha - mass_before) * e_sorted[k]
         return val / self.alpha

@@ -34,24 +34,24 @@ export default function Pareto() {
           <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
             {[0, 1, 2, 3, 4].map((i) => {
               const yv = y0 + ((y1 - y0) * i) / 4;
-              return <g key={i}><line x1={PAD} x2={W - 20} y1={Y(yv)} y2={Y(yv)} stroke="rgba(148,163,184,0.08)" /><text x={PAD - 8} y={Y(yv) + 4} fontSize={10} textAnchor="end" fill="#8b9ab0" fontFamily="monospace">{yv.toFixed(0)}</text></g>;
+              return <g key={i}><line x1={PAD} x2={W - 20} y1={Y(yv)} y2={Y(yv)} stroke="rgba(243,236,221,0.08)" /><text x={PAD - 8} y={Y(yv) + 4} fontSize={10} textAnchor="end" fill="#A9A291" fontFamily="monospace">{yv.toFixed(0)}</text></g>;
             })}
             {[0, 1, 2, 3, 4].map((i) => {
               const xv = x0 + ((x1 - x0) * i) / 4;
-              return <text key={i} x={X(xv)} y={H - PAD + 18} fontSize={10} textAnchor="middle" fill="#8b9ab0" fontFamily="monospace">{xv.toFixed(0)}h</text>;
+              return <text key={i} x={X(xv)} y={H - PAD + 18} fontSize={10} textAnchor="middle" fill="#A9A291" fontFamily="monospace">{xv.toFixed(0)}h</text>;
             })}
-            <text x={W / 2} y={H - 10} textAnchor="middle" fontSize={11} fill="#8b9ab0">response burden (team-hours) → lower is better</text>
-            <text x={14} y={H / 2} textAnchor="middle" fontSize={11} fill="#8b9ab0" transform={`rotate(-90 14 ${H / 2})`}>people reached (k) → higher is better</text>
+            <text x={W / 2} y={H - 10} textAnchor="middle" fontSize={11} fill="#A9A291">response burden (team-hours) → lower is better</text>
+            <text x={14} y={H / 2} textAnchor="middle" fontSize={11} fill="#A9A291" transform={`rotate(-90 14 ${H / 2})`}>people reached (k) → higher is better</text>
 
 
-            <motion.path d={front.map((j, i) => `${i ? "L" : "M"}${X(d.f2[j])},${Y(d.f1[j])}`).join(" ")} fill="none" stroke="#e6edf6" strokeDasharray="5 5" strokeWidth={1.5}
+            <motion.path d={front.map((j, i) => `${i ? "L" : "M"}${X(d.f2[j])},${Y(d.f1[j])}`).join(" ")} fill="none" stroke="#F3ECDD" strokeDasharray="5 5" strokeWidth={1.5}
               initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1.6, delay: 0.8 }} />
 
             {d.f1.map((_, j) => {
               const onFront = d.pareto[j];
               return (
                 <motion.circle key={j} cx={X(d.f2[j])} cy={Y(d.f1[j])} r={onFront ? 7 : 5}
-                  fill={onFront ? "#e6edf6" : "rgba(148,163,184,0.35)"}
+                  fill={onFront ? "#F3ECDD" : "rgba(243,236,221,0.35)"}
                   initial={{ opacity: 0, scale: 0 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}
                   transition={{ delay: 0.02 * j, type: "spring", stiffness: 300, damping: 15 }}
                   onPointerEnter={() => setHover(j)} onPointerLeave={() => setHover(null)} style={{ cursor: "pointer" }} />
@@ -60,23 +60,23 @@ export default function Pareto() {
             {front.map((j) => (
               <AnimatePresence key={j}>
                 {foundSet.has(j) && (
-                  <motion.circle cx={X(d.f2[j])} cy={Y(d.f1[j])} fill="none" stroke="#34d399" strokeWidth={2.5}
+                  <motion.circle cx={X(d.f2[j])} cy={Y(d.f1[j])} fill="none" stroke="#9CCB7A" strokeWidth={2.5}
                     initial={{ r: 30, opacity: 0 }} animate={{ r: 13, opacity: 1 }} exit={{ r: 30, opacity: 0 }} transition={{ type: "spring", stiffness: 200, damping: 15 }} />
                 )}
               </AnimatePresence>
             ))}
             {unsupported.map((j) => (
               <g key={j}>
-                <motion.rect x={X(d.f2[j]) - 12} y={Y(d.f1[j]) - 12} width={24} height={24} rx={4} fill="none" stroke="#fb7185" strokeWidth={2}
+                <motion.rect x={X(d.f2[j]) - 12} y={Y(d.f1[j]) - 12} width={24} height={24} rx={4} fill="none" stroke="#E0533D" strokeWidth={2}
                   animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 1.6, repeat: Infinity }} />
-                <text x={X(d.f2[j]) + 18} y={Y(d.f1[j]) + 26} fontSize={11} fill="#fb7185">unsupported: no weighted sum reaches it</text>
+                <text x={X(d.f2[j]) + 18} y={Y(d.f1[j]) + 26} fontSize={11} fill="#E0533D">unsupported: no weighted sum reaches it</text>
               </g>
             ))}
             {hover !== null && (
               <g pointerEvents="none">
-                <rect x={Math.min(X(d.f2[hover]) + 12, W - 190)} y={Y(d.f1[hover]) - 60} width={176} height={58} rx={10} fill="#0a111d" stroke="rgba(148,163,184,0.25)" />
+                <rect x={Math.min(X(d.f2[hover]) + 12, W - 190)} y={Y(d.f1[hover]) - 60} width={176} height={58} rx={10} fill="#141936" stroke="rgba(243,236,221,0.25)" />
                 {d.teams.map((t, ti) => (
-                  <text key={t.id} x={Math.min(X(d.f2[hover]) + 22, W - 180)} y={Y(d.f1[hover]) - 42 + ti * 14} fontSize={10} fill="#e6edf6" fontFamily="monospace">{t.id} → {d.plans[hover][ti]}</text>
+                  <text key={t.id} x={Math.min(X(d.f2[hover]) + 22, W - 180)} y={Y(d.f1[hover]) - 42 + ti * 14} fontSize={10} fill="#F3ECDD" fontFamily="monospace">{t.id} → {d.plans[hover][ti]}</text>
                 ))}
               </g>
             )}

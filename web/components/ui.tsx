@@ -67,7 +67,7 @@ export function TiltCard({ children, className = "" }: { children: ReactNode; cl
   const rx = useSpring(useTransform(my, [0, 1], [5, -5]), { stiffness: 200, damping: 20 });
   const ry = useSpring(useTransform(mx, [0, 1], [-5, 5]), { stiffness: 200, damping: 20 });
   const bg = useTransform([mx, my] as never, ([x, y]: number[]) =>
-    `radial-gradient(420px circle at ${x * 100}% ${y * 100}%, rgba(34,211,238,0.10), transparent 60%)`);
+    `radial-gradient(420px circle at ${x * 100}% ${y * 100}%, rgba(232,176,75,0.10), transparent 60%)`);
   return (
     <motion.div
       ref={ref}
@@ -91,7 +91,7 @@ export function MagneticButton({ children, href, primary = false, onClick, curso
   const y = useSpring(0, { stiffness: 300, damping: 18 });
   const ref = useRef<HTMLAnchorElement>(null);
   const cls = primary
-    ? "bg-white text-ink shadow-[0_0_40px_rgba(34,211,238,0.35)] hover:shadow-[0_0_60px_rgba(34,211,238,0.6)]"
+    ? "bg-white text-ink shadow-[0_0_40px_rgba(232,176,75,0.35)] hover:shadow-[0_0_60px_rgba(232,176,75,0.6)]"
     : "glass text-text hover:bg-white/10";
   return (
     <motion.a

@@ -1,17 +1,19 @@
 @import "tailwindcss";
 
 :root {
-  --ink: #04070d;
-  --surface: #0a111d;
-  --surface-2: #0e1726;
-  --line: rgba(148, 163, 184, 0.12);
-  --text: #e6edf6;
-  --muted: #8b9ab0;
-  --flood: #22d3ee;
-  --quantum: #a78bfa;
-  --signal: #fbbf24;
-  --danger: #fb7185;
-  --win: #34d399;
+  /* Ajrak palette — Sindh's block-printed textile: indigo, madder, ivory; plus saffron & river jade */
+  --ink: #0C0F1E;        /* indigo night */
+  --surface: #141936;
+  --surface-2: #1B2147;
+  --line: rgba(243, 236, 221, 0.11);
+  --text: #F3ECDD;       /* ivory */
+  --muted: #A9A291;      /* warm stone */
+  --flood: #E8B04B;      /* saffron — primary accent */
+  --quantum: #8F9CFF;    /* indigo periwinkle */
+  --signal: #D9A441;     /* ochre */
+  --danger: #E0533D;     /* madder red */
+  --win: #9CCB7A;        /* sage */
+  --river: #6FC3B2;      /* river jade */
 }
 
 @theme inline {
@@ -26,9 +28,11 @@
   --color-signal: var(--signal);
   --color-danger: var(--danger);
   --color-win: var(--win);
+  --color-river: var(--river);
   --font-sans: var(--font-jakarta);
   --font-mono: var(--font-jetbrains);
-  --font-serif: var(--font-instrument);
+  --font-serif: var(--font-fraunces);
+  --font-display: var(--font-fraunces);
 }
 
 html {
@@ -45,7 +49,7 @@ body {
 }
 
 ::selection {
-  background: rgba(34, 211, 238, 0.3);
+  background: rgba(232,176,75, 0.3);
 }
 
 /* film grain */
@@ -68,14 +72,14 @@ body {
 }
 
 .glass {
-  background: linear-gradient(180deg, rgba(20, 30, 48, 0.55), rgba(10, 17, 29, 0.55));
+  background: linear-gradient(180deg, rgba(34,40,82, 0.55), rgba(20,25,54, 0.55));
   border: 1px solid var(--line);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
 }
 
 .text-gradient {
-  background: linear-gradient(100deg, #e6edf6 10%, #22d3ee 45%, #a78bfa 75%, #e6edf6 100%);
+  background: linear-gradient(100deg, #F3ECDD 5%, #E8B04B 40%, #E0533D 70%, #F3ECDD 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
@@ -88,8 +92,8 @@ body {
 
 .grid-bg {
   background-image:
-    linear-gradient(to right, rgba(148, 163, 184, 0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
+    linear-gradient(to right, rgba(243,236,221, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(243,236,221, 0.06) 1px, transparent 1px);
   background-size: 56px 56px;
   mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
 }
@@ -105,7 +109,7 @@ body {
   inset: -1px;
   border-radius: inherit;
   padding: 1px;
-  background: conic-gradient(from var(--angle), transparent 0 70%, var(--flood) 80%, var(--quantum) 90%, transparent 100%);
+  background: conic-gradient(from var(--angle), transparent 0 70%, var(--flood) 80%, var(--danger) 90%, transparent 100%);
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
@@ -126,7 +130,7 @@ input[type="range"].slider {
   appearance: none;
   height: 6px;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--win), var(--flood), var(--signal));
+  background: linear-gradient(90deg, var(--river), var(--flood), var(--danger));
   outline: none;
 }
 input[type="range"].slider::-webkit-slider-thumb {
@@ -135,14 +139,14 @@ input[type="range"].slider::-webkit-slider-thumb {
   height: 22px;
   border-radius: 999px;
   background: #fff;
-  box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.35), 0 0 24px rgba(34, 211, 238, 0.7);
+  box-shadow: 0 0 0 4px rgba(232,176,75,0.35), 0 0 24px rgba(232,176,75,0.7);
   cursor: grab;
   transition: transform 0.15s;
 }
 input[type="range"].slider::-webkit-slider-thumb:active { transform: scale(1.2); cursor: grabbing; }
 input[type="range"].slider::-moz-range-thumb {
   width: 22px; height: 22px; border: 0; border-radius: 999px; background: #fff;
-  box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.35), 0 0 24px rgba(34, 211, 238, 0.7);
+  box-shadow: 0 0 0 4px rgba(232,176,75,0.35), 0 0 24px rgba(232,176,75,0.7);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -152,4 +156,13 @@ input[type="range"].slider::-moz-range-thumb {
 
 @media (pointer: fine) {
   .custom-cursor, .custom-cursor * { cursor: none !important; }
+}
+
+h1, h2, h3 { font-family: var(--font-fraunces), Georgia, serif; font-optical-sizing: auto; letter-spacing: -0.02em; }
+h1 { font-variation-settings: "SOFT" 50, "WONK" 1; }
+
+/* Ajrak lattice: 8-point stars in madder + ivory on indigo, used as a slow-drifting texture */
+.ajrak-tex {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'><g fill='none' stroke-width='1.2'><path d='M32 14 L36 28 L50 32 L36 36 L32 50 L28 36 L14 32 L28 28 Z' stroke='%23E0533D'/><rect x='24' y='24' width='16' height='16' transform='rotate(45 32 32)' stroke='%23F3ECDD' stroke-opacity='.55'/><circle cx='32' cy='32' r='3' fill='%23E8B04B'/><circle cx='0' cy='0' r='4' stroke='%23F3ECDD' stroke-opacity='.4'/><circle cx='64' cy='0' r='4' stroke='%23F3ECDD' stroke-opacity='.4'/><circle cx='0' cy='64' r='4' stroke='%23F3ECDD' stroke-opacity='.4'/><circle cx='64' cy='64' r='4' stroke='%23F3ECDD' stroke-opacity='.4'/></g></svg>");
+  background-size: 64px 64px;
 }

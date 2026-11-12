@@ -89,7 +89,7 @@ export default function Dilemma() {
           </Reveal>
         </div>
       </div>
-      <p className="mx-auto mt-6 max-w-6xl text-center text-xs text-muted/70">* {d.data_note}</p>
+      <p className="mx-auto mt-6 max-w-6xl text-center text-xs text-muted">* {d.data_note}</p>
     </section>
   );
 }

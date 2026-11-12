@@ -66,7 +66,7 @@ def main(out="results", p=2, penalty=2.0, shots=1024, seed=7, lams=np.linspace(0
     hv_exact = hypervolume(f1[pm], f2[pm], *ref)
 
     R = dict(meta=dict(p=p, penalty=penalty, shots=shots, seed=seed, n_qubits=sc.n,
-                       n_feasible=int(len(idx)), lams=[float(l) for l in lams],
+                       n_feasible=int(len(idx)), lams=[float(x) for x in lams],
                        f1max=f1max, f2max=f2max, hv_ref=ref),
              scenario=dict(teams=sc.teams, sites=sc.sites, benefit=sc.benefit.tolist(),
                            travel_h=sc.travel_h.tolist(), corridor=sc.corridor,

@@ -22,7 +22,8 @@ export default function Hero({ start }: { start: boolean }) {
   return (
     <section ref={ref} id="top" className="relative flex min-h-[100svh] items-center overflow-hidden">
       <FlowField className="absolute inset-0 h-full w-full opacity-40" density={0.00025} />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_70%_40%,rgba(34,211,238,0.12),transparent_55%),radial-gradient(ellipse_at_bottom_left,rgba(167,139,250,0.10),transparent_50%)]" />
+      <motion.div aria-hidden className="ajrak-tex absolute inset-0 opacity-[0.07] [mask-image:radial-gradient(ellipse_at_70%_45%,black,transparent_70%)]" animate={{ backgroundPositionX: ["0px", "64px"], backgroundPositionY: ["0px", "64px"] }} transition={{ duration: 12, repeat: Infinity, ease: "linear" }} />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_70%_40%,rgba(232,176,75,0.13),transparent_55%),radial-gradient(ellipse_at_bottom_left,rgba(224,83,61,0.12),transparent_50%),radial-gradient(ellipse_at_top_left,rgba(43,53,144,0.35),transparent_60%)]" />
       <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-b from-transparent to-ink" />
 
       <div className="relative mx-auto grid w-full max-w-7xl items-center gap-6 px-5 pb-16 pt-28 md:px-8 lg:grid-cols-[1.05fr_1fr]">

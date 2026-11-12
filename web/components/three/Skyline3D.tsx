@@ -23,7 +23,7 @@ function Column({ j, rankPos, prob, maxP, isOpt, color, label, done }: { j: numb
   const row = Math.floor(rankPos / COLS), col = rankPos % COLS;
   const x = (col - (COLS - 1) / 2) * GAP, z = (row - 1.5) * GAP;
   const target = Math.max(0.03, (prob / maxP) * HMAX);
-  const base = useMemo(() => new THREE.Color(isOpt ? color : "#64748b"), [isOpt, color]);
+  const base = useMemo(() => new THREE.Color(isOpt ? color : "#7B7567"), [isOpt, color]);
   useFrame((_, dt) => {
     const m = mesh.current!;
     const h = THREE.MathUtils.damp(m.scale.y, target, 6, dt);
@@ -40,14 +40,14 @@ function Column({ j, rankPos, prob, maxP, isOpt, color, label, done }: { j: numb
       </mesh>
       {(hover || (isOpt && done)) && (
         <Html position={[0, target + 0.45, 0]} center distanceFactor={7} zIndexRange={[20, 0]}>
-          <div className={`whitespace-nowrap rounded-lg border px-2 py-1 font-mono text-[11px] ${isOpt ? "border-win/50 bg-[#062018] text-win" : "border-white/15 bg-[#0a111d] text-white/80"}`}>
+          <div className={`whitespace-nowrap rounded-lg border px-2 py-1 font-mono text-[11px] ${isOpt ? "border-win/50 bg-[#1F2A14] text-win" : "border-white/15 bg-[#141936] text-white/80"}`}>
             {isOpt ? "👑 " : `#${rankPos + 1} `}{label} · {(prob * 100).toFixed(1)}%
           </div>
         </Html>
       )}
       <mesh position={[0, 0.002, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[0.62, 0.62]} />
-        <meshBasicMaterial color={isOpt ? color : "#1e293b"} transparent opacity={0.5} />
+        <meshBasicMaterial color={isOpt ? color : "#2A2F55"} transparent opacity={0.5} />
       </mesh>
       {void j}
     </group>
@@ -64,10 +64,10 @@ function InvalidPool({ invalid }: { invalid: number }) {
     <group position={[-(COLS / 2) * GAP - 1.1, 0, 0]}>
       <mesh ref={m} scale={[1, 0.02, 1]}>
         <cylinderGeometry args={[0.38, 0.38, 1, 48]} />
-        <meshPhysicalMaterial color="#fb7185" emissive="#fb7185" emissiveIntensity={0.5} transparent opacity={0.65} roughness={0.2} toneMapped={false} />
+        <meshPhysicalMaterial color="#E0533D" emissive="#E0533D" emissiveIntensity={0.5} transparent opacity={0.65} roughness={0.2} toneMapped={false} />
       </mesh>
       <Html position={[0, -0.35, 0.7]} center distanceFactor={7}>
-        <div className="whitespace-nowrap font-mono text-[11px] text-[#fb7185]">invalid {(invalid * 100).toFixed(0)}%</div>
+        <div className="whitespace-nowrap font-mono text-[11px] text-[#E0533D]">invalid {(invalid * 100).toFixed(0)}%</div>
       </Html>
     </group>
   );
@@ -80,10 +80,10 @@ export default function Skyline3D(p: SkylineProps) {
     <Canvas camera={{ position: [5.6, 5.2, 7.6], fov: 36 }} dpr={[1, 1.75]} gl={{ antialias: true, alpha: true }}>
       <ambientLight intensity={0.4} />
       <directionalLight position={[5, 8, 4]} intensity={1.4} />
-      <pointLight position={[-4, 3, -3]} intensity={12} color="#8b5cf6" />
+      <pointLight position={[-4, 3, -3]} intensity={12} color="#6F7DF0" />
       <group position={[0.55, -0.55, 0]}>
         <RoundedBox args={[COLS * GAP + 3.0, 0.08, 4 * GAP + 0.6]} radius={0.04} position={[-0.6, -0.05, 0]}>
-          <meshPhysicalMaterial color="#0b1220" metalness={0.5} roughness={0.3} clearcoat={1} />
+          <meshPhysicalMaterial color="#141936" metalness={0.5} roughness={0.3} clearcoat={1} />
         </RoundedBox>
         {p.probs.map((prob, j) => (
           <Column key={j} j={j} rankPos={pos.get(j) ?? 0} prob={prob} maxP={maxP} isOpt={p.optimal.has(j)} color={p.color} label={p.labels[j]} done={p.done} />
@@ -93,7 +93,7 @@ export default function Skyline3D(p: SkylineProps) {
       <OrbitControls enableZoom={false} enablePan={false} autoRotate autoRotateSpeed={0.5} minPolarAngle={0.5} maxPolarAngle={1.25} />
       <Environment resolution={128}>
         <Lightformer form="rect" intensity={2.5} position={[0, 5, -5]} scale={[10, 3, 1]} />
-        <Lightformer form="rect" intensity={1.5} position={[-5, 2, 0]} rotation-y={Math.PI / 2} scale={[6, 2, 1]} color="#22d3ee" />
+        <Lightformer form="rect" intensity={1.5} position={[-5, 2, 0]} rotation-y={Math.PI / 2} scale={[6, 2, 1]} color="#6FC3B2" />
       </Environment>
     </Canvas>
   );

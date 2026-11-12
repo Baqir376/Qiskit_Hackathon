@@ -20,7 +20,7 @@ export default function AppTeaser() {
         sub="Pick a priority, pick an algorithm, press Run. A real 12-qubit QAOA simulation runs in your browser (our Qiskit circuit, verified to match Qiskit), and you watch the quantum state reshape in 3D until the best dispatch plan rises to the top." />
       <div ref={ref} className="mx-auto mt-16 max-w-6xl" style={{ perspective: 1400 }}>
         <motion.div style={{ rotateX, scale, y }} className="relative origin-bottom">
-          <motion.div style={{ opacity: glow }} className="absolute -inset-10 -z-10 rounded-[3rem] bg-[radial-gradient(ellipse_at_center,rgba(34,211,238,0.35),transparent_65%)] blur-2xl" />
+          <motion.div style={{ opacity: glow }} className="absolute -inset-10 -z-10 rounded-[3rem] bg-[radial-gradient(ellipse_at_center,rgba(232,176,75,0.35),transparent_65%)] blur-2xl" />
           <a href={`${BASE_PATH}/app/`} data-cursor="open" className="block overflow-hidden rounded-[2rem] border border-white/10 bg-surface p-2 shadow-[0_40px_120px_rgba(0,0,0,0.6)]">
             <div className="flex items-center gap-1.5 px-3 pb-2 pt-1">
               <span className="h-2.5 w-2.5 rounded-full bg-danger/70" /><span className="h-2.5 w-2.5 rounded-full bg-signal/70" /><span className="h-2.5 w-2.5 rounded-full bg-win/70" />
