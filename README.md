@@ -1,3 +1,5 @@
+[![Tests](https://github.com/Baqir376/Qiskit_Hackathon/actions/workflows/tests.yml/badge.svg)](https://github.com/Baqir376/Qiskit_Hackathon/actions/workflows/tests.yml)
+
 # FloodQAOA — quantum multi-objective dispatch of flood-relief teams
 
 **Qiskit Fall Fest 2026 Hackathon · Domain 2: Disaster Response**
