@@ -1,12 +1,13 @@
 "use client";
 import { motion, useScroll, useSpring } from "motion/react";
 import { useEffect, useState } from "react";
+import { BASE_PATH } from "@/lib/data";
 
 const LINKS = [
   ["dilemma", "Dilemma"],
   ["qubits", "Qubits"],
-  ["lab", "Lab"],
-  ["pareto", "Trade-offs"],
+  ["lab", "Workspace"],
+  ["pareto", "Pareto"],
   ["results", "Results"],
   ["honest", "Limits"],
 ] as const;
@@ -38,12 +39,12 @@ export default function Nav({ show }: { show: boolean }) {
             <span className="hidden sm:inline">FloodQAOA</span>
           </a>
           {LINKS.map(([id, label]) => (
-            <a key={id} href={`#${id}`} className="relative hidden rounded-full px-3 py-1.5 text-xs font-medium text-muted transition-colors hover:text-text md:block">
+            <a key={id} href={`#${id}`} className="relative hidden whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium text-muted transition-colors hover:text-text md:block">
               {active === id && <motion.span layoutId="navpill" className="absolute inset-0 rounded-full bg-white/10" transition={{ type: "spring", stiffness: 400, damping: 30 }} />}
               <span className="relative">{label}</span>
             </a>
           ))}
-          <a href="https://github.com/Baqir376/Qiskit_Hackathon" target="_blank" rel="noreferrer" className="ml-1 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-ink">GitHub</a>
+          <a href={`${BASE_PATH}/app/`} data-cursor="open" className="ml-1 whitespace-nowrap rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-ink">Launch app →</a>
         </div>
       </motion.nav>
     </>

@@ -16,6 +16,7 @@ export type Run = {
   found_optimum: boolean;
   n_evals: number;
   opt_index: number[];
+  theta: number[];
 };
 export type VariantKey = "A" | "B" | "C" | "D";
 export type FloodData = {

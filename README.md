@@ -61,16 +61,20 @@ There is no single correct plan, so FloodQAOA uses **QAOA in Qiskit** to compute
 
 ## Interactive website
 
-`web/` is a Next.js + Tailwind + Motion site that tells the story and **replays real QAOA training data**.
-Every bar and number is exported from our Qiskit runs by `python -m floodqaoa.export_web`, which asserts
-that each replayed run matches `results/results.json`.
+**Live:** https://baqir376.github.io/Qiskit_Hackathon/ · **App:** https://baqir376.github.io/Qiskit_Hackathon/app/
+
+`web/` is a Next.js + Tailwind + Motion + React Three Fiber site with two parts:
+
+- **`/` landing page:** the story (2022 floods → dilemma → qubits → results → honest limitations), with an
+  interactive 3D glass qubit register (tilt with the mouse, hover to excite, click to measure).
+- **`/app` Quantum Workspace:** pick a priority and an algorithm, press Run. A **12-qubit statevector
+  simulation of our exact Qiskit circuit runs in the browser** (`web/lib/qsim.ts`), and the state is shown as a
+  3D probability skyline. `node web/scripts/verify-qsim.ts` checks it against Qiskit's statevector for all 44
+  trained runs (max |Δp| = 5·10⁻⁶, which is the rounding of the stored values). "Qiskit replay" mode plays back the recorded Qiskit training.
 
 ```bash
-cd web && npm install && npm run dev      # http://localhost:3000
+cd web && npm install && npm run dev      # http://localhost:3000  and  /app
 ```
-
-Sections: qubit-collapse loader → hero → live Sindh map (λ slider) → flood-to-qubits explainer →
-**"Watch QAOA think" lab + quantum race** → Pareto front → results bento → honest limitations → architecture.
 
 ## Run it
 

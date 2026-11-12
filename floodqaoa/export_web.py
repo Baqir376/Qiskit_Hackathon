@@ -61,7 +61,7 @@ def main(out="web/public/data/flood.json"):
                 p_opt=round(p_opt, 5),
                 feasible=round(float(res.probs[feas_all].sum()), 5),
                 best_plan=ref["best_plan"], found_optimum=ref["found_optimum"],
-                n_evals=ref["n_evals"], opt_index=[int(o) for o in opt],
+                n_evals=ref["n_evals"], opt_index=[int(o) for o in opt], theta=[float(x) for x in res.theta],
             ))
             print(f"{v} lam={lam:.1f} ok  P(opt)={p_opt:.3f} frames={len(frames)}", flush=True)
 
@@ -70,7 +70,7 @@ def main(out="web/public/data/flood.json"):
         meta=dict(n_qubits=sc.n, n_feasible=len(idx), p=M["p"], shots=M["shots"], penalty=M["penalty"], lams=lams,
                   f1max=f1max, f2max=f2max),
         teams=sc.teams, sites=sc.sites, data_note=sc.raw["data_note"],
-        benefit=np.round(sc.benefit, 2).tolist(), travel_h=np.round(sc.travel_h, 2).tolist(),
+        benefit=sc.benefit.tolist(), travel_h=sc.travel_h.tolist(),
         corridor=sc.corridor, congestion_h=sc.congestion_h,
         plans=plans, feasible_index=idx.tolist(), f1=np.round(f1, 2).tolist(), f2=np.round(f2, 2).tolist(),
         pareto=R["exact"]["pareto"], supported=R["exact"]["supported"],

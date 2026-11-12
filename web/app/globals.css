@@ -149,3 +149,7 @@ input[type="range"].slider::-moz-range-thumb {
   .grain::after, .text-gradient, .beam-border::before { animation: none; }
   html { scroll-behavior: auto; }
 }
+
+@media (pointer: fine) {
+  .custom-cursor, .custom-cursor * { cursor: none !important; }
+}

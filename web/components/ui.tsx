@@ -86,7 +86,7 @@ export function TiltCard({ children, className = "" }: { children: ReactNode; cl
   );
 }
 
-export function MagneticButton({ children, href, primary = false, onClick }: { children: ReactNode; href?: string; primary?: boolean; onClick?: () => void }) {
+export function MagneticButton({ children, href, primary = false, onClick, cursor }: { children: ReactNode; href?: string; primary?: boolean; onClick?: () => void; cursor?: string }) {
   const x = useSpring(0, { stiffness: 300, damping: 18 });
   const y = useSpring(0, { stiffness: 300, damping: 18 });
   const ref = useRef<HTMLAnchorElement>(null);
@@ -97,6 +97,7 @@ export function MagneticButton({ children, href, primary = false, onClick }: { c
     <motion.a
       ref={ref}
       href={href}
+      data-cursor={cursor}
       onClick={onClick}
       target={href?.startsWith("http") ? "_blank" : undefined}
       rel="noreferrer"

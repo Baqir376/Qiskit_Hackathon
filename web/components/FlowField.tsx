@@ -12,6 +12,9 @@ export default function FlowField({ className = "", density = 0.00055 }: { class
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     type P = { x: number; y: number; life: number; hue: number };
     let ps: P[] = [];
+    let mx = -9999, my = -9999;
+    const onMove = (e: PointerEvent) => { const r = canvas.getBoundingClientRect(); mx = e.clientX - r.left; my = e.clientY - r.top; };
+    window.addEventListener("pointermove", onMove);
     const resize = () => {
       w = canvas.clientWidth; h = canvas.clientHeight;
       canvas.width = w * dpr; canvas.height = h * dpr;
@@ -31,7 +34,9 @@ export default function FlowField({ className = "", density = 0.00055 }: { class
       ctx.fillRect(0, 0, w, h);
       for (const p of ps) {
         const a = field(p.x, p.y);
-        const nx = p.x + Math.cos(a) * 1.25, ny = p.y + Math.sin(a) * 1.25;
+        let nx = p.x + Math.cos(a) * 1.25, ny = p.y + Math.sin(a) * 1.25;
+        const dx = p.x - mx, dy = p.y - my, d2 = dx * dx + dy * dy;
+        if (d2 < 16000) { const k = (1 - d2 / 16000) * 3.2 / Math.sqrt(d2 + 1); nx += dx * k; ny += dy * k; }
         ctx.strokeStyle = p.hue < 0.82 ? `rgba(34,211,238,${0.22 + p.hue * 0.25})` : `rgba(167,139,250,0.45)`;
         ctx.lineWidth = 1;
         ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(nx, ny); ctx.stroke();
@@ -48,7 +53,7 @@ export default function FlowField({ className = "", density = 0.00055 }: { class
     const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; });
     io.observe(canvas);
     window.addEventListener("resize", resize);
-    return () => { cancelAnimationFrame(raf); io.disconnect(); window.removeEventListener("resize", resize); };
+    return () => { cancelAnimationFrame(raf); io.disconnect(); window.removeEventListener("resize", resize); window.removeEventListener("pointermove", onMove); };
   }, [density]);
   return <canvas ref={ref} className={className} aria-hidden />;
 }

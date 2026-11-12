@@ -18,7 +18,7 @@ function curve(a: readonly [number, number], b: readonly [number, number]) {
   return { d: `M${a[0]},${a[1]} Q${cx},${cy} ${b[0]},${b[1]}`, c: [cx, cy] as const };
 }
 
-export default function SindhMap({ plan, pulse = true }: { plan: [string, string][]; pulse?: boolean }) {
+export default function SindhMap({ plan, pulse = true, neutral = false }: { plan: [string, string][]; pulse?: boolean; neutral?: boolean }) {
   const d = useData();
   const P = (lon: number, lat: number) => project(lon, lat, W, H);
   const river = INDUS.map(([lo, la], i) => `${i ? "L" : "M"}${P(lo, la).join(",")}`).join(" ");
@@ -54,7 +54,7 @@ export default function SindhMap({ plan, pulse = true }: { plan: [string, string
       {[[67.72, 26.75, 120], [67.8, 27.05, 95], [67.65, 26.5, 80], [68.4, 28.2, 70]].map(([lo, la, r], i) => {
         const [x, y] = P(lo, la);
         return (
-          <motion.circle key={i} cx={x} cy={y} r={r} fill="url(#flood)"
+          <motion.circle key={i} cx={x} cy={y} r={r} initial={{ r }} fill="url(#flood)"
             animate={pulse ? { r: [r * 0.9, r * 1.08, r * 0.9] } : {}} transition={{ duration: 6 + i, repeat: Infinity, ease: "easeInOut" }} />
         );
       })}
@@ -90,20 +90,20 @@ export default function SindhMap({ plan, pulse = true }: { plan: [string, string
       {/* sites */}
       {d.sites.map((s) => {
         const [x, y] = P(s.lon, s.lat);
-        const isServed = served.has(s.id);
+        const isServed = neutral || served.has(s.id);
         const r = 6 + s.people_k / 8;
         const left = s.id === "JOHI";
         return (
           <g key={s.id}>
             {!isServed && (
-              <motion.circle cx={x} cy={y} r={r} fill="none" stroke="#fb7185" strokeWidth={2}
+              <motion.circle cx={x} cy={y} r={r} initial={{ r }} fill="none" stroke="#fb7185" strokeWidth={2}
                 animate={{ r: [r, r + 22], opacity: [0.9, 0] }} transition={{ duration: 1.4, repeat: Infinity }} />
             )}
-            <motion.circle cx={x} cy={y} animate={{ r, fill: isServed ? "#34d399" : "#fb7185" }} fillOpacity={0.3}
-              stroke={isServed ? "#34d399" : "#fb7185"} strokeWidth={1.5} transition={{ duration: 0.5 }} />
+            <motion.circle cx={x} cy={y} r={r} initial={{ r }} animate={{ r, fill: neutral ? "#22d3ee" : isServed ? "#34d399" : "#fb7185" }} fillOpacity={0.3}
+              stroke={neutral ? "#22d3ee" : isServed ? "#34d399" : "#fb7185"} strokeWidth={1.5} transition={{ duration: 0.5 }} />
             <text x={left ? x - r - 6 : x + r + 6} y={y - 2} textAnchor={left ? "end" : "start"} fontSize={12} fill="#e6edf6" fontWeight={600}>{s.name.replace(" (Dadu district)", "")}</text>
-            <text x={left ? x - r - 6 : x + r + 6} y={y + 12} textAnchor={left ? "end" : "start"} fontSize={10} fill={isServed ? "#34d399" : "#fb7185"} fontFamily="monospace">
-              {s.people_k}k* · {isServed ? "served" : "WAITS"}
+            <text x={left ? x - r - 6 : x + r + 6} y={y + 12} textAnchor={left ? "end" : "start"} fontSize={10} fill={neutral ? "#8b9ab0" : isServed ? "#34d399" : "#fb7185"} fontFamily="monospace">
+              {s.people_k}k* · {neutral ? "awaiting plan" : isServed ? "served" : "WAITS"}
             </text>
           </g>
         );
