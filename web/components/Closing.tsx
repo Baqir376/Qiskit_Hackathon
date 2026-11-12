@@ -3,7 +3,6 @@ import { motion } from "motion/react";
 import { useState } from "react";
 import { BASE_PATH } from "@/lib/data";
 import Backdrop from "./Backdrop";
-import FlowField from "./FlowField";
 import { MagneticButton, Reveal, SectionHeader } from "./ui";
 
 const REPO = "https://github.com/Baqir376/Qiskit_Hackathon";
@@ -78,7 +77,6 @@ export default function Closing() {
       </section>
 
       <section className="relative isolate overflow-clip px-5 pb-16 pt-32 md:px-8">
-        <FlowField className="absolute inset-0 -z-10 h-full w-full opacity-50" density={0.0003} />
         <Backdrop layers={["aurora"]} tone="warm" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(232,176,75,0.12),transparent_60%)]" />
         <div className="relative mx-auto max-w-4xl text-center">

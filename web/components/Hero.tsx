@@ -3,7 +3,7 @@ import { AnimatePresence, motion, useScroll, useTransform } from "motion/react";
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import { BASE_PATH } from "@/lib/data";
-import FlowField from "./FlowField";
+import QuantumLens from "./QuantumLens";
 import { CountUp, MagneticButton, ease } from "./ui";
 
 const QubitRegister3D = dynamic(() => import("./three/QubitRegister3D"), { ssr: false });
@@ -26,9 +26,13 @@ export default function Hero({ start }: { start: boolean }) {
   const d = (i: number) => (start ? 0.15 + i * 0.07 : 99);
 
   return (
-    <section ref={ref} id="top" className="relative flex min-h-[100svh] items-center overflow-hidden">
-      <FlowField className="absolute inset-0 h-full w-full opacity-40" density={0.00025} />
+    <section ref={ref} id="top" className="lens-host relative flex min-h-[100svh] items-center overflow-hidden"
+      onPointerMove={(e) => { const r = ref.current!.getBoundingClientRect(); ref.current!.style.setProperty("--lx", `${e.clientX - r.left}px`); ref.current!.style.setProperty("--ly", `${e.clientY - r.top}px`); ref.current!.style.setProperty("--lr", "190px"); }}
+      onPointerLeave={() => ref.current!.style.setProperty("--lr", "0px")}>
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_70%_40%,rgba(232,176,75,0.13),transparent_55%),radial-gradient(ellipse_at_bottom_left,rgba(224,83,61,0.12),transparent_50%),radial-gradient(ellipse_at_top_left,rgba(43,53,144,0.35),transparent_60%)]" />
+      <div className="absolute inset-0 opacity-[0.35] [background-image:radial-gradient(rgba(243,236,221,0.18)_1px,transparent_1px)] [background-size:28px_28px] [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_75%)]" />
+      <QuantumLens />
+      <div className="lens-ring pointer-events-none absolute z-20 hidden rounded-full border border-flood/60 md:block" />
       <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-b from-transparent to-ink" />
 
       <div className="relative mx-auto grid w-full max-w-7xl items-center gap-6 px-5 pb-16 pt-28 md:px-8 lg:grid-cols-[1.05fr_1fr]">

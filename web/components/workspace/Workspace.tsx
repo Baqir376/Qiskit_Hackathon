@@ -6,6 +6,9 @@ import { BASE_PATH, lamIndex, orderByObjective, useData, VCOLOR, VSHORT, type Va
 import { costDiagonal, DIM, evaluate, isFeasible, multiStart, qaoaProbabilities, sampleShots, sortedOrder, type Scenario } from "@/lib/qsim";
 import SindhMap, { TEAM_COL, TEAM_ICON } from "../SindhMap";
 import { ease, GlassPanel, Ticker } from "../ui";
+import LambdaKnob from "./LambdaKnob";
+import RaceView from "./RaceView";
+import TradeoffGeometry from "./TradeoffGeometry";
 
 const Skyline3D = dynamic(() => import("../three/Skyline3D"), { ssr: false, loading: () => <div className="flex h-full items-center justify-center font-mono text-xs text-muted">loading 3D…</div> });
 
@@ -33,6 +36,8 @@ export default function Workspace() {
   const [evalNo, setEvalNo] = useState(0);
   const [result, setResult] = useState<{ plan: [string, string][]; found: boolean; pOpt: number; pValid: number; shots: number; validShots: number } | null>(null);
   const cancel = useRef(false);
+  const [tab, setTab] = useState<"state" | "geometry" | "race">("state");
+  const [livePlanIdx, setLivePlanIdx] = useState<number | null>(null);
   const [toast, setToast] = useState<{ ok: boolean; text: string } | null>(null);
 
   const sc: Scenario = useMemo(() => ({ T: 3, S: 4, benefit: d.benefit, travel: d.travel_h, corridor: d.corridor, congestion: d.congestion_h, f1max: d.meta.f1max, f2max: d.meta.f2max }), [d]);
@@ -50,7 +55,7 @@ export default function Workspace() {
   const reset = useCallback((mixer: "x" | "xy") => {
     cancel.current = true;
     const u = mixer === "x" ? 1 / 4096 : 1 / 64;
-    setProbs(Array(24).fill(u)); setInvalid(1 - 24 * u); setHist([]); setEvalNo(0); setResult(null); setPhase("idle");
+    setProbs(Array(24).fill(u)); setInvalid(1 - 24 * u); setHist([]); setEvalNo(0); setResult(null); setLivePlanIdx(null); setPhase("idle");
   }, []);
   useEffect(() => { reset(INFO[v].mixer); }, [v, lam, p, mode, reset]);
 
@@ -67,6 +72,7 @@ export default function Workspace() {
     });
     const pOpt = [...optSet].reduce((a, j) => a + full[d.feasible_index[j]], 0);
     let pValid = 0; d.feasible_index.forEach((k) => (pValid += full[k]));
+    setLivePlanIdx(best >= 0 ? best : null);
     setResult({
       plan: best >= 0 ? d.teams.map((t, ti) => [t.id, d.plans[best][ti]] as [string, string]) : [],
       found: best >= 0 && optSet.has(best), pOpt, pValid, shots: d.meta.shots, validShots,
@@ -138,7 +144,8 @@ export default function Workspace() {
   phaseRef.current = phase;
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if ((e.target as HTMLElement)?.tagName === "INPUT" || e.metaKey || e.ctrlKey) return;
+      const tgt = e.target as HTMLElement;
+      if (tgt?.tagName === "INPUT" || tgt?.getAttribute?.("role") === "slider" || e.metaKey || e.ctrlKey) return;
       const k = e.key.toLowerCase();
       if (k === "r" && phaseRef.current !== "running") runRef.current();
       else if (["1", "2", "3", "4"].includes(k)) setV(KEYS[+k - 1]);
@@ -174,15 +181,14 @@ export default function Workspace() {
       <div className="grid gap-4 xl:grid-cols-[320px_1fr_360px]">
         {/* controls */}
         <div className="flex flex-col gap-4">
-          <Card title="① Commander priority">
+          <Card title="① Commander priority · turn the dial">
             <div className="grid grid-cols-3 gap-1.5">
               {PRESETS.map((pr) => (
                 <button key={pr.l} data-cursor="set" onClick={() => setLam(pr.v)}
                   className={`rounded-xl border px-2 py-2 text-xs font-semibold transition-colors ${Math.abs(lam - pr.v) < 1e-9 ? "border-flood/60 bg-flood/10 text-flood" : "border-line text-muted hover:text-text"}`}>{pr.l}</button>
               ))}
             </div>
-            <input aria-label="priority" className="slider mt-5 w-full" type="range" min={0} max={1} step={0.1} value={lam} onChange={(e) => setLam(parseFloat(e.target.value))} />
-            <div className="mt-2 flex justify-between font-mono text-[10px] text-muted"><span>reach people</span><span className="text-text">λ = {lam.toFixed(1)}</span><span>respond fast</span></div>
+            <div className="mt-3"><LambdaKnob value={lam} onChange={setLam} /></div>
           </Card>
 
           <Card title="② Quantum algorithm">
@@ -236,15 +242,36 @@ export default function Workspace() {
 
         {/* 3D */}
         <GlassPanel className="h-[min(78vh,720px)] min-h-[480px]" inner="flex flex-col">
-          <div className="flex items-center justify-between px-5 pt-4">
-            <div>
-              <div className="font-mono text-[10px] uppercase tracking-widest text-muted">Quantum state · 24 valid dispatch plans</div>
-              <div className="text-xs text-muted/80">column height = probability · glowing column = exact optimum · drag to orbit</div>
+          <div className="flex items-center justify-between gap-3 px-4 pt-4">
+            <div className="flex rounded-2xl border border-line bg-white/[0.03] p-1">
+              {([["state", "Quantum state"], ["geometry", "Trade-off geometry"], ["race", "Algorithm race"]] as const).map(([id, label]) => (
+                <button key={id} onClick={() => setTab(id)} data-cursor="view" className="relative rounded-xl px-3 py-1.5 text-xs font-semibold">
+                  {tab === id && <motion.span layoutId="ctab" className="absolute inset-0 rounded-xl bg-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.15)]" transition={{ type: "spring", stiffness: 420, damping: 32 }} />}
+                  <span className={`relative ${tab === id ? "text-text" : "text-muted"}`}>{label}</span>
+                </button>
+              ))}
             </div>
             <div className="text-right font-mono text-[11px] text-muted">eval <span className="text-text">{evalNo}</span></div>
           </div>
-          <div className="relative flex-1" data-cursor="orbit">
-            <Skyline3D probs={probs} rank={rank} optimal={optSet} invalid={invalid} labels={labels} color={color} done={phase === "done"} />
+          <div className="relative flex-1 overflow-hidden">
+            {/* 3D view stays mounted (WebGL + DOM portals must not unmount mid-animation) */}
+            <motion.div className="absolute inset-0" data-cursor="orbit" initial={false}
+              animate={tab === "state" ? { opacity: 1, x: 0, filter: "blur(0px)", scale: 1 } : { opacity: 0, x: -40, filter: "blur(8px)", scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 220, damping: 26 }}
+              style={{ pointerEvents: tab === "state" ? "auto" : "none", visibility: tab === "state" ? "visible" : "hidden" }}>
+              <div className="absolute left-5 top-2 z-10 text-xs text-muted">column height = probability · glowing column = exact optimum · drag to orbit</div>
+              <Skyline3D probs={probs} rank={rank} optimal={optSet} invalid={invalid} labels={labels} color={color} done={phase === "done"} />
+            </motion.div>
+            <AnimatePresence initial={false}>
+              {tab !== "state" && (
+                <motion.div key={tab} className="absolute inset-0"
+                  initial={{ opacity: 0, x: 40, filter: "blur(8px)", scale: 0.98 }} animate={{ opacity: 1, x: 0, filter: "blur(0px)", scale: 1 }}
+                  exit={{ opacity: 0, x: -40, filter: "blur(8px)", scale: 0.98 }} transition={{ type: "spring", stiffness: 220, damping: 26 }}>
+                  {tab === "geometry" && <div className="h-full p-3"><TradeoffGeometry lam={lam} optimal={rank[0]} livePlan={livePlanIdx} /></div>}
+                  {tab === "race" && <RaceView lam={lam} />}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
           <div className="grid grid-cols-3 gap-px border-t border-line bg-line">
             <Metric label="P(optimal plan)" value={pOptNow} format={(x) => x.toFixed(3)} color={color} />

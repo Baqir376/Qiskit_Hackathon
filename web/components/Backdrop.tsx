@@ -20,11 +20,11 @@ export default function Backdrop({ layers = ["aurora"], tone = "mixed", classNam
       {layers.includes("aurora") && (
         <>
           <motion.div className="absolute -left-[10%] top-[5%] h-[55vmax] w-[55vmax] rounded-full blur-[110px]" style={{ background: c1 }}
-            animate={{ x: [0, 120, -40, 0], y: [0, 60, 140, 0], scale: [1, 1.15, 0.95, 1] }} transition={{ duration: 28, repeat: Infinity, ease: "easeInOut" }} />
+            animate={{ x: [0, 40, 0], y: [0, 30, 0] }} transition={{ duration: 60, repeat: Infinity, ease: "easeInOut" }} />
           <motion.div className="absolute -right-[15%] top-[30%] h-[50vmax] w-[50vmax] rounded-full blur-[120px]" style={{ background: c2 }}
-            animate={{ x: [0, -140, 30, 0], y: [0, -80, 60, 0], scale: [1, 0.9, 1.2, 1] }} transition={{ duration: 34, repeat: Infinity, ease: "easeInOut" }} />
+            animate={{ x: [0, -40, 0], y: [0, -25, 0] }} transition={{ duration: 70, repeat: Infinity, ease: "easeInOut" }} />
           <motion.div className="absolute bottom-[-20%] left-[30%] h-[45vmax] w-[45vmax] rounded-full blur-[120px]" style={{ background: c3 }}
-            animate={{ x: [0, 80, -100, 0], y: [0, -60, 20, 0] }} transition={{ duration: 40, repeat: Infinity, ease: "easeInOut" }} />
+            animate={{ x: [0, 30, 0], y: [0, -20, 0] }} transition={{ duration: 80, repeat: Infinity, ease: "easeInOut" }} />
         </>
       )}
       {layers.includes("contours") && <Contours />}
@@ -55,7 +55,7 @@ function Contours() {
   }, []);
   return (
     <motion.svg viewBox="0 0 1000 1000" className="absolute left-1/2 top-1/2 h-[140vmax] w-[140vmax] -translate-x-1/2 -translate-y-1/2 opacity-[0.22]"
-      animate={{ rotate: [0, 8, -4, 0], scale: [1, 1.05, 1] }} transition={{ duration: 60, repeat: Infinity, ease: "easeInOut" }}>
+      animate={{ rotate: [0, 3, 0] }} transition={{ duration: 120, repeat: Infinity, ease: "easeInOut" }}>
       {rings.map((d, i) => (
         <path key={i} d={d} fill="none" stroke={i % 4 === 0 ? "#6FC3B2" : "#F3ECDD"} strokeOpacity={i % 4 === 0 ? 0.55 : 0.18} strokeWidth={i % 4 === 0 ? 1.3 : 0.8}
           strokeDasharray={i % 3 === 0 ? "4 10" : undefined}>

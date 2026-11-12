@@ -163,3 +163,18 @@ h1 { font-variation-settings: "SOFT" 50, "WONK" 1; }
 
 @keyframes grid-flow { to { background-position: 0 60px, 0 60px; } }
 
+
+/* Quantum Lens: animatable custom properties so the lens opens/closes smoothly */
+@property --lr { syntax: "<length>"; initial-value: 0px; inherits: true; }
+.lens-host { transition: --lr 0.45s cubic-bezier(0.22, 1, 0.36, 1); }
+.lens-ring {
+  left: var(--lx, 50%); top: var(--ly, 50%);
+  width: calc(var(--lr) * 2); height: calc(var(--lr) * 2);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 40px rgba(232, 176, 75, 0.25), inset 0 0 30px rgba(232, 176, 75, 0.12);
+}
+.lens-ring::after {
+  content: "QUANTUM VIEW"; position: absolute; left: 50%; top: -22px; transform: translateX(-50%);
+  font: 600 9px/1 var(--font-jetbrains), monospace; letter-spacing: 0.25em; color: var(--flood);
+  opacity: calc(var(--lr) / 190px);
+}

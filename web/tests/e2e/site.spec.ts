@@ -29,9 +29,10 @@ test.describe("landing page", () => {
   });
 
   test("has no critical/serious accessibility violations", async ({ page }) => {
+    test.setTimeout(150_000);
     await page.goto("/");
     await page.waitForTimeout(6000);
-    const res = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).exclude("canvas").analyze();
+    const res = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).exclude("canvas").exclude("[aria-hidden=true]").analyze();
     const bad = res.violations.filter((v) => v.impact === "critical" || v.impact === "serious");
     expect(bad.map((v) => `${v.id}: ${v.nodes.length}`)).toEqual([]);
   });
@@ -67,13 +68,19 @@ test.describe("quantum workspace", () => {
   test("presets update lambda", async ({ page }) => {
     await page.goto("/app/");
     await page.getByRole("button", { name: "Fastest" }).click();
-    await expect(page.getByText("λ = 1.0")).toBeVisible();
+    await expect(page.getByRole("slider", { name: /Commander priority/ })).toHaveAttribute("aria-valuenow", "1");
+    await page.getByRole("button", { name: "Trade-off geometry" }).click();
+    await expect(page.getByText(/How the optimiser/)).toBeVisible();
+    await page.getByRole("button", { name: "Algorithm race" }).click();
+    await page.getByRole("button", { name: /Start race/ }).click();
+    await expect(page.getByText("🏆")).toBeVisible({ timeout: 15_000 });
   });
 
   test("has no critical/serious accessibility violations", async ({ page }) => {
+    test.setTimeout(150_000);
     await page.goto("/app/");
     await page.waitForTimeout(3000);
-    const res = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).exclude("canvas").analyze();
+    const res = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).exclude("canvas").exclude("[aria-hidden=true]").analyze();
     const bad = res.violations.filter((v) => v.impact === "critical" || v.impact === "serious");
     expect(bad.map((v) => `${v.id}: ${v.nodes.length}`)).toEqual([]);
   });

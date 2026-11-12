@@ -16,7 +16,7 @@ export default function AppTeaser() {
 
   return (
     <section className="relative isolate overflow-clip px-5 py-32 md:px-8">
-      <Backdrop layers={["aurora", "bubbles"]} tone="warm" />
+      <Backdrop layers={["aurora", "contours"]} tone="warm" />
       <SectionHeader id="lab" kicker="03 · The Quantum Workspace"
         title={<>Run the quantum dispatcher <span className="font-serif font-normal italic text-gradient">yourself</span></>}
         sub="Pick a priority, pick an algorithm, press Run. A real 12-qubit QAOA simulation runs in your browser (our Qiskit circuit, verified to match Qiskit), and you watch the quantum state reshape in 3D until the best dispatch plan rises to the top." />

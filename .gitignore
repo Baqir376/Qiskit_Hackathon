@@ -9,3 +9,6 @@ export_log.txt
 ~$*
 .coverage
 .hypothesis/
+# private planning docs
+GridQ_Complete_Expanded_Project_Specification.md
+gridq_mathematical_formulation_and_qiskit_implementation.md
