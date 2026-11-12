@@ -7,3 +7,5 @@ streamlit_log.txt
 .playwright-mcp/
 export_log.txt
 ~$*
+.coverage
+.hypothesis/
